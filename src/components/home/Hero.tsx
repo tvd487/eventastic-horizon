@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Search } from 'lucide-react';
@@ -23,7 +22,7 @@ const Hero: React.FC = () => {
                 Browse Events
               </Link>
             </Button>
-            <Button size="lg" asChild variant="outline" className="border-white text-white hover:bg-white/10">
+            <Button size="lg" asChild variant="outline" className="border-white text-oceanBlue hover:bg-white/10">
               <Link to="/create">
                 Create Event
               </Link>

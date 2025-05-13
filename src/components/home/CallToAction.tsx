@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
@@ -17,7 +16,7 @@ const CallToAction: React.FC = () => {
               Get Started for Free
             </Link>
           </Button>
-          <Button size="lg" asChild variant="outline" className="border-white text-white hover:bg-white/10">
+          <Button size="lg" asChild variant="outline" className="border-white text-oceanBlue hover:bg-white/10">
             <Link to="/contact">
               Contact Sales
             </Link>
