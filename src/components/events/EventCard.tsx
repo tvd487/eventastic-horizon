@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Calendar, MapPin, Users } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { isValid, parseISO, format } from 'date-fns';
 
 export interface EventProps {
   id: string;
@@ -26,6 +27,29 @@ const EventCard: React.FC<EventProps> = ({
   attendees, 
   price 
 }) => {
+  // Helper function to safely format dates if needed
+  const formatEventDate = (dateString: string) => {
+    // If the date is already a formatted string like "June 15-18, 2025", return it as is
+    if (!/^\d{4}-\d{2}-\d{2}/.test(dateString) && !dateString.includes('T')) {
+      return dateString;
+    }
+    
+    try {
+      // For ISO string dates, try to parse them first
+      const parsedDate = typeof dateString === 'string' ? parseISO(dateString) : new Date(dateString);
+      
+      // Check if the date is valid before formatting
+      if (isValid(parsedDate)) {
+        return format(parsedDate, 'MMM dd, yyyy');
+      }
+      
+      return dateString; // If invalid, just return the original string
+    } catch (error) {
+      console.error('Error formatting date:', error, dateString);
+      return dateString; // In case of error, return the original string
+    }
+  };
+
   return (
     <Link to={`/events/${id}`}>
       <Card className="event-card overflow-hidden border border-gray-200 h-full">
@@ -44,7 +68,7 @@ const EventCard: React.FC<EventProps> = ({
           
           <div className="flex items-center text-gray-600 text-sm mb-2">
             <Calendar className="h-4 w-4 mr-2 text-oceanBlue" />
-            <span>{date}</span>
+            <span>{formatEventDate(date)}</span>
           </div>
           
           <div className="flex items-center text-gray-600 text-sm">
