@@ -1,13 +1,29 @@
-// Update this page (the content is just a fallback if you fail to update the page)
 
-const Index = () => {
+import React from 'react';
+import MainLayout from '../components/layout/MainLayout';
+import Hero from '../components/home/Hero';
+import Features from '../components/home/Features';
+import EventTypes from '../components/home/EventTypes';
+import EventList from '../components/events/EventList';
+import CallToAction from '../components/home/CallToAction';
+import { featuredEvents } from '../data/sampleEvents';
+
+const Index: React.FC = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
+    <MainLayout>
+      <Hero />
+      <div className="container mx-auto px-4">
+        <EventList 
+          title="Featured Events" 
+          events={featuredEvents} 
+        />
       </div>
-    </div>
+      <Features />
+      <div className="container mx-auto px-4">
+        <EventTypes />
+      </div>
+      <CallToAction />
+    </MainLayout>
   );
 };
 
