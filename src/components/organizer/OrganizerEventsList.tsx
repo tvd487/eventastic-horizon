@@ -4,13 +4,31 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { EventProps } from '../events/EventCard';
 import { Calendar, Users, Edit, Settings } from 'lucide-react';
-import { format } from 'date-fns';
+import { format, isValid, parseISO } from 'date-fns';
 
 interface OrganizerEventsListProps {
   events: EventProps[];
 }
 
 const OrganizerEventsList: React.FC<OrganizerEventsListProps> = ({ events }) => {
+  // Helper function to safely format dates
+  const formatEventDate = (dateString: string) => {
+    try {
+      // For string dates, try to parse them first
+      const date = typeof dateString === 'string' ? parseISO(dateString) : new Date(dateString);
+      
+      // Check if the date is valid before formatting
+      if (isValid(date)) {
+        return format(date, 'MMM dd, yyyy');
+      }
+      
+      return 'Invalid date';
+    } catch (error) {
+      console.error('Error formatting date:', error, dateString);
+      return 'Invalid date';
+    }
+  };
+
   return (
     <div className="space-y-4">
       {events.map((event, index) => (
@@ -26,7 +44,7 @@ const OrganizerEventsList: React.FC<OrganizerEventsListProps> = ({ events }) => 
                   <h3 className="font-bold text-lg">{event.title}</h3>
                   <div className="flex items-center text-gray-500 text-sm gap-2">
                     <Calendar className="h-4 w-4" />
-                    <span>{format(new Date(event.date), 'MMM dd, yyyy')}</span>
+                    <span>{formatEventDate(event.date)}</span>
                   </div>
                   <div className="flex items-center text-gray-500 text-sm gap-2">
                     <Users className="h-4 w-4" />
