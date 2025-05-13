@@ -11,6 +11,8 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import SelectRole from "./pages/SelectRole";
 import AttendeesDashboard from "./pages/attendee/Dashboard";
+import OrganizerDashboard from "./pages/organizer/Dashboard";
+import CreateEvent from "./pages/organizer/CreateEvent";
 
 const queryClient = new QueryClient();
 
@@ -27,6 +29,8 @@ const App = () => (
           <Route path="/register" element={<Register />} />
           <Route path="/select-role" element={<SelectRole />} />
           <Route path="/attendee/dashboard" element={<AttendeesDashboard />} />
+          <Route path="/organizer/dashboard" element={<OrganizerDashboard />} />
+          <Route path="/organizer/events/create" element={<CreateEvent />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

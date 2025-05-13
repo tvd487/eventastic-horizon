@@ -1,0 +1,59 @@
+
+import React from 'react';
+import { Card, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { EventProps } from '../events/EventCard';
+import { Calendar, Users, Edit, Settings } from 'lucide-react';
+import { format } from 'date-fns';
+
+interface OrganizerEventsListProps {
+  events: EventProps[];
+}
+
+const OrganizerEventsList: React.FC<OrganizerEventsListProps> = ({ events }) => {
+  return (
+    <div className="space-y-4">
+      {events.map((event, index) => (
+        <Card key={index} className="overflow-hidden border-l-4 border-l-purple-500">
+          <CardContent className="p-0">
+            <div className="flex flex-col md:flex-row">
+              <div 
+                className="w-full md:w-48 h-32 md:h-auto bg-cover bg-center" 
+                style={{ backgroundImage: `url(${event.imageUrl})` }}
+              />
+              <div className="p-4 flex-grow flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <h3 className="font-bold text-lg">{event.title}</h3>
+                  <div className="flex items-center text-gray-500 text-sm gap-2">
+                    <Calendar className="h-4 w-4" />
+                    <span>{format(new Date(event.date), 'MMM dd, yyyy')}</span>
+                  </div>
+                  <div className="flex items-center text-gray-500 text-sm gap-2">
+                    <Users className="h-4 w-4" />
+                    <span>{Math.floor(Math.random() * 200) + 50} registered</span>
+                  </div>
+                </div>
+                <div className="flex flex-wrap gap-2 mt-2 md:mt-0">
+                  <Button size="sm" variant="outline" className="flex gap-1">
+                    <Edit className="h-4 w-4" />
+                    <span>Edit</span>
+                  </Button>
+                  <Button size="sm" variant="outline" className="flex gap-1">
+                    <Users className="h-4 w-4" />
+                    <span>Attendees</span>
+                  </Button>
+                  <Button size="sm" variant="outline" className="flex gap-1">
+                    <Settings className="h-4 w-4" />
+                    <span>Settings</span>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+};
+
+export default OrganizerEventsList;
