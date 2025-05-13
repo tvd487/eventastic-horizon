@@ -13,6 +13,9 @@ import SelectRole from "./pages/SelectRole";
 import AttendeesDashboard from "./pages/attendee/Dashboard";
 import OrganizerDashboard from "./pages/organizer/Dashboard";
 import CreateEvent from "./pages/organizer/CreateEvent";
+import AdminDashboard from "./pages/admin/Dashboard";
+import AdminUsers from "./pages/admin/Users";
+import AdminSettings from "./pages/admin/Settings";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +34,12 @@ const App = () => (
           <Route path="/attendee/dashboard" element={<AttendeesDashboard />} />
           <Route path="/organizer/dashboard" element={<OrganizerDashboard />} />
           <Route path="/organizer/events/create" element={<CreateEvent />} />
+          
+          {/* Admin Routes */}
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin/users" element={<AdminUsers />} />
+          <Route path="/admin/settings" element={<AdminSettings />} />
+          
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
