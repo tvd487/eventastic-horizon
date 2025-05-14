@@ -65,9 +65,9 @@ export default {
 				},
 				// Eventomorrow custom colors
 				oceanBlue: {
-					DEFAULT: '#0EA5E9',
+					DEFAULT: '#0A2463', // Dark blue
 					light: '#D3E4FD',
-					dark: '#0284C7',
+					dark: '#061A4B',
 				},
 			},
 			borderRadius: {
