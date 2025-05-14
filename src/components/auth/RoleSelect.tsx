@@ -13,7 +13,7 @@ interface RoleCardProps {
 
 const RoleCard: React.FC<RoleCardProps> = ({ title, description, icon, onSelect }) => {
   return (
-    <Card className="hover:border-oceanBlue transition-all hover:shadow-md">
+    <Card className="hover:border-primary transition-all hover:shadow-md">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           {icon}
@@ -25,7 +25,7 @@ const RoleCard: React.FC<RoleCardProps> = ({ title, description, icon, onSelect 
         {/* Role specific features could be listed here */}
       </CardContent>
       <CardFooter>
-        <Button onClick={onSelect} className="w-full">
+        <Button onClick={onSelect} className="w-full bg-primary hover:bg-primary-dark">
           Continue as {title}
         </Button>
       </CardFooter>
@@ -41,19 +41,19 @@ const RoleSelect: React.FC<{ onRoleSelect: (role: string) => void }> = ({ onRole
         <RoleCard
           title="Attendee"
           description="Discover and register for events, view your tickets, and manage your attendance."
-          icon={<User className="h-6 w-6 text-oceanBlue" />}
+          icon={<User className="h-6 w-6 text-primary" />}
           onSelect={() => onRoleSelect('attendee')}
         />
         <RoleCard
           title="Organizer"
           description="Create and manage events, track registrations, and analyze attendance."
-          icon={<Users className="h-6 w-6 text-oceanBlue" />}
+          icon={<Users className="h-6 w-6 text-primary" />}
           onSelect={() => onRoleSelect('organizer')}
         />
         <RoleCard
           title="Admin"
           description="Manage the platform, users, and system settings."
-          icon={<ShieldCheck className="h-6 w-6 text-oceanBlue" />}
+          icon={<ShieldCheck className="h-6 w-6 text-primary" />}
           onSelect={() => onRoleSelect('admin')}
         />
       </div>

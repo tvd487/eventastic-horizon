@@ -23,7 +23,7 @@ const AdminSidebar: React.FC = () => {
   return (
     <div className="bg-white rounded-lg shadow-md p-4">
       <div className="flex items-center gap-2 p-2 mb-6">
-        <ShieldCheck className="h-6 w-6 text-purple-600" />
+        <ShieldCheck className="h-6 w-6 text-primary" />
         <h2 className="text-xl font-bold text-gray-800">Admin Panel</h2>
       </div>
       
@@ -34,13 +34,13 @@ const AdminSidebar: React.FC = () => {
             to={item.path}
             className={`flex items-center gap-3 px-3 py-2 rounded-md transition-colors ${
               location.pathname === item.path
-                ? 'bg-purple-100 text-purple-700'
+                ? 'bg-primary/10 text-primary'
                 : 'text-gray-700 hover:bg-gray-100'
             }`}
           >
             {React.cloneElement(item.icon, { 
               className: `${item.icon.props.className} ${
-                location.pathname === item.path ? 'text-purple-600' : 'text-gray-500'
+                location.pathname === item.path ? 'text-primary' : 'text-gray-500'
               }` 
             })}
             <span>{item.name}</span>

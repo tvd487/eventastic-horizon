@@ -50,7 +50,7 @@ const EventTypes: React.FC = () => {
       name: "Technology",
       description: "Conferences, hackathons, and product launches for tech enthusiasts.",
       icon: "💻",
-      color: "#0EA5E9"
+      color: "#0A2463" // Updated to the new dark blue
     }
   ];
 

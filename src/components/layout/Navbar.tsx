@@ -43,21 +43,21 @@ const Navbar: React.FC = () => {
     <nav className="bg-white shadow-sm py-4 sticky top-0 z-50">
       <div className="container mx-auto px-4 flex items-center justify-between">
         <Link to="/" className="flex items-center space-x-2">
-          <Calendar className="h-8 w-8 text-oceanBlue" />
-          <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-oceanBlue to-oceanBlue-dark">
+          <Calendar className="h-8 w-8 text-primary" />
+          <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-dark">
             Eventomorrow
           </span>
         </Link>
 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-6">
-          <Link to="/events" className="text-gray-700 hover:text-oceanBlue font-medium transition-colors">
+          <Link to="/events" className="text-gray-700 hover:text-primary font-medium transition-colors">
             Events
           </Link>
-          <Link to="/about" className="text-gray-700 hover:text-oceanBlue font-medium transition-colors">
+          <Link to="/about" className="text-gray-700 hover:text-primary font-medium transition-colors">
             About
           </Link>
-          <Link to="/contact" className="text-gray-700 hover:text-oceanBlue font-medium transition-colors">
+          <Link to="/contact" className="text-gray-700 hover:text-primary font-medium transition-colors">
             Contact
           </Link>
           
@@ -93,13 +93,13 @@ const Navbar: React.FC = () => {
             <div className="flex items-center space-x-2">
               <Button 
                 variant="outline" 
-                className="border-oceanBlue text-oceanBlue hover:bg-oceanBlue hover:text-white"
+                className="border-primary text-primary hover:bg-primary hover:text-white"
                 onClick={() => navigate('/login')}
               >
                 Login
               </Button>
               <Button 
-                className="bg-oceanBlue hover:bg-oceanBlue-dark text-white"
+                className="bg-primary hover:bg-primary-dark text-white"
                 onClick={() => navigate('/register')}
               >
                 Sign Up
@@ -119,19 +119,19 @@ const Navbar: React.FC = () => {
             <nav className="flex flex-col space-y-4 mt-8">
               <Link 
                 to="/events" 
-                className="text-gray-700 hover:text-oceanBlue font-medium py-2"
+                className="text-gray-700 hover:text-primary font-medium py-2"
               >
                 Events
               </Link>
               <Link 
                 to="/about" 
-                className="text-gray-700 hover:text-oceanBlue font-medium py-2"
+                className="text-gray-700 hover:text-primary font-medium py-2"
               >
                 About
               </Link>
               <Link 
                 to="/contact" 
-                className="text-gray-700 hover:text-oceanBlue font-medium py-2"
+                className="text-gray-700 hover:text-primary font-medium py-2"
               >
                 Contact
               </Link>
@@ -162,13 +162,13 @@ const Navbar: React.FC = () => {
                   <>
                     <Button 
                       variant="outline" 
-                      className="w-full mb-2 border-oceanBlue text-oceanBlue hover:bg-oceanBlue hover:text-white"
+                      className="w-full mb-2 border-primary text-primary hover:bg-primary hover:text-white"
                       onClick={() => navigate('/login')}
                     >
                       Login
                     </Button>
                     <Button 
-                      className="w-full bg-oceanBlue hover:bg-oceanBlue-dark text-white"
+                      className="w-full bg-primary hover:bg-primary-dark text-white"
                       onClick={() => navigate('/register')}
                     >
                       Sign Up

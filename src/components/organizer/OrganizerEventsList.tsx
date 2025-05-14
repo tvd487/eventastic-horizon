@@ -32,7 +32,7 @@ const OrganizerEventsList: React.FC<OrganizerEventsListProps> = ({ events }) => 
   return (
     <div className="space-y-4">
       {events.map((event, index) => (
-        <Card key={index} className="overflow-hidden border-l-4 border-l-purple-500">
+        <Card key={index} className="overflow-hidden border-l-4 border-l-primary">
           <CardContent className="p-0">
             <div className="flex flex-col md:flex-row">
               <div 
@@ -52,15 +52,15 @@ const OrganizerEventsList: React.FC<OrganizerEventsListProps> = ({ events }) => 
                   </div>
                 </div>
                 <div className="flex flex-wrap gap-2 mt-2 md:mt-0">
-                  <Button size="sm" variant="outline" className="flex gap-1">
+                  <Button size="sm" variant="outline" className="flex gap-1 hover:bg-primary hover:text-white">
                     <Edit className="h-4 w-4" />
                     <span>Edit</span>
                   </Button>
-                  <Button size="sm" variant="outline" className="flex gap-1">
+                  <Button size="sm" variant="outline" className="flex gap-1 hover:bg-primary hover:text-white">
                     <Users className="h-4 w-4" />
                     <span>Attendees</span>
                   </Button>
-                  <Button size="sm" variant="outline" className="flex gap-1">
+                  <Button size="sm" variant="outline" className="flex gap-1 hover:bg-primary hover:text-white">
                     <Settings className="h-4 w-4" />
                     <span>Settings</span>
                   </Button>

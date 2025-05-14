@@ -40,7 +40,7 @@ const AdminStats: React.FC = () => {
         percentage="12%"
         isIncrease={true}
         icon={<Users className="h-6 w-6 text-white" />}
-        color="bg-purple-600"
+        color="bg-primary"
       />
       <StatCard
         title="Total Events"
@@ -48,7 +48,7 @@ const AdminStats: React.FC = () => {
         percentage="8%"
         isIncrease={true}
         icon={<Calendar className="h-6 w-6 text-white" />}
-        color="bg-blue-500"
+        color="bg-primary/80"
       />
       <StatCard
         title="Revenue"
