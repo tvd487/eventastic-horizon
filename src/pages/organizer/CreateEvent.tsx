@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MainLayout from '../../components/layout/MainLayout';
@@ -444,8 +443,9 @@ const CreateEvent: React.FC = () => {
         
         <Card className="mb-8">
           <Tabs defaultValue="basic" className="w-full">
-            <TabsList className="grid w-full grid-cols-5">
+            <TabsList className="grid w-full grid-cols-6">
               <TabsTrigger value="basic">Basic Info</TabsTrigger>
+              <TabsTrigger value="speakers">Speakers</TabsTrigger>
               <TabsTrigger value="schedule">Schedule</TabsTrigger>
               <TabsTrigger value="sponsors">Sponsors</TabsTrigger>
               <TabsTrigger value="booths">Exhibition</TabsTrigger>
@@ -527,11 +527,123 @@ const CreateEvent: React.FC = () => {
                   </div>
                   
                   <div className="flex justify-end pt-4">
-                    <Button type="button" onClick={() => navigateToTab("schedule")}>
+                    <Button type="button" onClick={() => navigateToTab("speakers")}>
                       Save & Continue
                     </Button>
                   </div>
                 </form>
+              </CardContent>
+            </TabsContent>
+            
+            {/* New Speakers Tab */}
+            <TabsContent value="speakers">
+              <CardContent className="pt-6">
+                <div className="space-y-6">
+                  <h3 className="text-lg font-medium mb-4">Speakers</h3>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                    {eventData.speakers.map(speaker => (
+                      <Card key={speaker.id} className="relative">
+                        <Button 
+                          variant="ghost" 
+                          size="icon" 
+                          className="absolute top-2 right-2 h-6 w-6 text-destructive" 
+                          onClick={() => handleRemoveSpeaker(speaker.id)}
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                        <CardContent className="pt-6 flex items-start gap-4">
+                          <Avatar className="h-14 w-14">
+                            <AvatarImage src={speaker.avatarUrl} alt={speaker.name} />
+                            <AvatarFallback>{speaker.name.substring(0, 2).toUpperCase()}</AvatarFallback>
+                          </Avatar>
+                          <div>
+                            <p className="font-semibold">{speaker.name}</p>
+                            <p className="text-sm text-muted-foreground">{speaker.title}</p>
+                            {speaker.bio && <p className="text-sm mt-2">{speaker.bio}</p>}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    ))}
+                  </div>
+                  
+                  {/* Add new speaker form */}
+                  <Card className="mb-6">
+                    <CardHeader>
+                      <CardTitle className="text-md">Add New Speaker</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                        <div className="flex flex-col items-center justify-center gap-2">
+                          <Avatar className="h-20 w-20">
+                            {newSpeaker.avatarUrl ? (
+                              <AvatarImage src={newSpeaker.avatarUrl} alt="Speaker avatar" />
+                            ) : (
+                              <AvatarFallback>
+                                <Users className="h-8 w-8" />
+                              </AvatarFallback>
+                            )}
+                          </Avatar>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="mt-2"
+                            onClick={() => handleImageUpload('speaker', 'avatarUrl', 'some-url')}
+                          >
+                            <Upload className="h-4 w-4 mr-2" />
+                            Upload Photo
+                          </Button>
+                        </div>
+                        <div className="space-y-2 md:col-span-2">
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div className="space-y-2">
+                              <Label htmlFor="speakerName">Name</Label>
+                              <Input 
+                                id="speakerName" 
+                                value={newSpeaker.name} 
+                                onChange={(e) => setNewSpeaker(prev => ({ ...prev, name: e.target.value }))} 
+                                placeholder="Speaker name"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="speakerTitle">Title</Label>
+                              <Input 
+                                id="speakerTitle" 
+                                value={newSpeaker.title} 
+                                onChange={(e) => setNewSpeaker(prev => ({ ...prev, title: e.target.value }))}
+                                placeholder="Job title/Company"
+                              />
+                            </div>
+                          </div>
+                          <div className="space-y-2">
+                            <Label htmlFor="speakerBio">Bio</Label>
+                            <Textarea 
+                              id="speakerBio" 
+                              value={newSpeaker.bio} 
+                              onChange={(e) => setNewSpeaker(prev => ({ ...prev, bio: e.target.value }))}
+                              placeholder="Speaker bio information"
+                              rows={3}
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                    <CardFooter className="flex justify-between border-t pt-4">
+                      <Button variant="outline" onClick={() => navigateToTab("basic")}>
+                        Back
+                      </Button>
+                      <Button onClick={handleAddSpeaker} className="flex items-center gap-2">
+                        <Plus size={16} /> Add Speaker
+                      </Button>
+                    </CardFooter>
+                  </Card>
+                  
+                  <div className="flex justify-end pt-4">
+                    <Button onClick={() => navigateToTab("schedule")}>
+                      Continue to Schedule
+                    </Button>
+                  </div>
+                </div>
               </CardContent>
             </TabsContent>
             
@@ -553,107 +665,6 @@ const CreateEvent: React.FC = () => {
                   </div>
                 ) : (
                   <div className="space-y-8">
-                    {/* Speakers list */}
-                    <div>
-                      <h3 className="text-lg font-medium mb-4">Speakers</h3>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                        {eventData.speakers.map(speaker => (
-                          <Card key={speaker.id} className="relative">
-                            <Button 
-                              variant="ghost" 
-                              size="icon" 
-                              className="absolute top-2 right-2 h-6 w-6 text-destructive" 
-                              onClick={() => handleRemoveSpeaker(speaker.id)}
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </Button>
-                            <CardContent className="pt-6 flex items-start gap-4">
-                              <Avatar className="h-14 w-14">
-                                <AvatarImage src={speaker.avatarUrl} alt={speaker.name} />
-                                <AvatarFallback>{speaker.name.substring(0, 2).toUpperCase()}</AvatarFallback>
-                              </Avatar>
-                              <div>
-                                <p className="font-semibold">{speaker.name}</p>
-                                <p className="text-sm text-muted-foreground">{speaker.title}</p>
-                                {speaker.bio && <p className="text-sm mt-2">{speaker.bio}</p>}
-                              </div>
-                            </CardContent>
-                          </Card>
-                        ))}
-                      </div>
-                      
-                      {/* Add new speaker form */}
-                      <Card className="mb-6">
-                        <CardHeader>
-                          <CardTitle className="text-md">Add New Speaker</CardTitle>
-                        </CardHeader>
-                        <CardContent>
-                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                            <div className="flex flex-col items-center justify-center gap-2">
-                              <Avatar className="h-20 w-20">
-                                {newSpeaker.avatarUrl ? (
-                                  <AvatarImage src={newSpeaker.avatarUrl} alt="Speaker avatar" />
-                                ) : (
-                                  <AvatarFallback>
-                                    <Users className="h-8 w-8" />
-                                  </AvatarFallback>
-                                )}
-                              </Avatar>
-                              <Button 
-                                variant="outline" 
-                                size="sm" 
-                                className="mt-2"
-                                onClick={() => handleImageUpload('speaker', 'avatarUrl', 'some-url')}
-                              >
-                                <Upload className="h-4 w-4 mr-2" />
-                                Upload Photo
-                              </Button>
-                            </div>
-                            <div className="space-y-2 md:col-span-2">
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                                <div className="space-y-2">
-                                  <Label htmlFor="speakerName">Name</Label>
-                                  <Input 
-                                    id="speakerName" 
-                                    value={newSpeaker.name} 
-                                    onChange={(e) => setNewSpeaker(prev => ({ ...prev, name: e.target.value }))} 
-                                    placeholder="Speaker name"
-                                  />
-                                </div>
-                                <div className="space-y-2">
-                                  <Label htmlFor="speakerTitle">Title</Label>
-                                  <Input 
-                                    id="speakerTitle" 
-                                    value={newSpeaker.title} 
-                                    onChange={(e) => setNewSpeaker(prev => ({ ...prev, title: e.target.value }))}
-                                    placeholder="Job title/Company"
-                                  />
-                                </div>
-                              </div>
-                              <div className="space-y-2">
-                                <Label htmlFor="speakerBio">Bio</Label>
-                                <Textarea 
-                                  id="speakerBio" 
-                                  value={newSpeaker.bio} 
-                                  onChange={(e) => setNewSpeaker(prev => ({ ...prev, bio: e.target.value }))}
-                                  placeholder="Speaker bio information"
-                                  rows={3}
-                                />
-                              </div>
-                            </div>
-                          </div>
-                        </CardContent>
-                        <CardFooter className="flex justify-end border-t pt-4">
-                          <Button onClick={handleAddSpeaker} className="flex items-center gap-2">
-                            <Plus size={16} /> Add Speaker
-                          </Button>
-                        </CardFooter>
-                      </Card>
-                      
-                      <Separator className="my-8" />
-                    </div>
-                    
                     {/* Event schedule by day */}
                     <div>
                       <h3 className="text-lg font-medium mb-4">Event Schedule</h3>
@@ -855,7 +866,10 @@ const CreateEvent: React.FC = () => {
                                   </div>
                                 )}
                               </CardContent>
-                              <CardFooter className="flex justify-end border-t pt-4">
+                              <CardFooter className="flex justify-between border-t pt-4">
+                                <Button variant="outline" onClick={() => navigateToTab("speakers")}>
+                                  Back to Speakers
+                                </Button>
                                 <Button onClick={handleAddActivity} className="flex items-center gap-2">
                                   <Plus size={16} /> Add Activity
                                 </Button>
@@ -931,6 +945,12 @@ const CreateEvent: React.FC = () => {
                           )}
                         </div>
                       ))}
+                    </div>
+
+                    <div className="flex justify-end pt-4">
+                      <Button onClick={() => navigateToTab("sponsors")}>
+                        Continue to Sponsors
+                      </Button>
                     </div>
                   </div>
                 )}
@@ -1226,6 +1246,12 @@ const CreateEvent: React.FC = () => {
                     Upload banners, logos, and promotional materials
                   </p>
                   <Button className="mt-4">Upload Images</Button>
+                </div>
+
+                <div className="flex justify-start pt-4">
+                  <Button variant="outline" onClick={() => navigateToTab("booths")}>
+                    Back to Exhibition
+                  </Button>
                 </div>
               </CardContent>
             </TabsContent>
