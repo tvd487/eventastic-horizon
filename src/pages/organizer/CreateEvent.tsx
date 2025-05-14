@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MainLayout from '../../components/layout/MainLayout';
@@ -269,6 +268,14 @@ const CreateEvent: React.FC = () => {
     });
   };
 
+  // Fix for TypeScript errors - safely handle tab clicks
+  const navigateToTab = (tabValue: string) => {
+    const tabElement = document.querySelector(`[data-value="${tabValue}"]`) as HTMLElement | null;
+    if (tabElement && 'click' in tabElement) {
+      tabElement.click();
+    }
+  };
+
   return (
     <MainLayout>
       <div className="container mx-auto px-4 py-8">
@@ -366,7 +373,7 @@ const CreateEvent: React.FC = () => {
                   </div>
                   
                   <div className="flex justify-end pt-4">
-                    <Button type="button" onClick={() => document.querySelector('[data-value="schedule"]')?.click()}>
+                    <Button type="button" onClick={() => navigateToTab("schedule")}>
                       Lưu & Tiếp Tục
                     </Button>
                   </div>
@@ -385,7 +392,7 @@ const CreateEvent: React.FC = () => {
                     </p>
                     <Button 
                       className="mt-4" 
-                      onClick={() => document.querySelector('[data-value="basic"]')?.click()}
+                      onClick={() => navigateToTab("basic")}
                     >
                       Quay Lại Thông Tin Cơ Bản
                     </Button>
@@ -789,4 +796,3 @@ const CreateEvent: React.FC = () => {
 };
 
 export default CreateEvent;
-
