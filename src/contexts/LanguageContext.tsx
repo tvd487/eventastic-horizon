@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 
 type Language = 'en' | 'vi';
@@ -153,22 +152,18 @@ export const LanguageProvider: React.FC<LanguageProviderProps> = ({ children }) 
 
   const translate = (key: string): string => {
     const keys = key.split('.');
-    let translation: any = translations[language];
+    let result = translations[language];
     
+    // Navigate through nested keys
     for (const k of keys) {
-      if (!translation[k]) {
+      if (!result || result[k] === undefined) {
         console.warn(`Translation key not found: ${key}`);
         return key;
       }
-      translation = translation[k];
+      result = result[k];
     }
     
-    if (typeof translation === 'string') {
-      return translation;
-    }
-    
-    console.warn(`Translation key not found: ${key}`);
-    return key;
+    return result;
   };
 
   return (
