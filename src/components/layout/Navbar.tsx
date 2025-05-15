@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Menu, X, Calendar, User } from "lucide-react";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import LanguageSwitcher from './LanguageSwitcher';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface User {
   email: string;
@@ -17,6 +19,7 @@ const Navbar: React.FC = () => {
   const [user, setUser] = useState<User | null>(null);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   useEffect(() => {
     const userString = localStorage.getItem('currentUser');
@@ -52,13 +55,13 @@ const Navbar: React.FC = () => {
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center space-x-6">
           <Link to="/events" className="text-gray-700 hover:text-primary font-medium transition-colors">
-            Events
+            {t('nav.events')}
           </Link>
           <Link to="/about" className="text-gray-700 hover:text-primary font-medium transition-colors">
-            About
+            {t('nav.about')}
           </Link>
           <Link to="/contact" className="text-gray-700 hover:text-primary font-medium transition-colors">
-            Contact
+            {t('nav.contact')}
           </Link>
           
           {user ? (
@@ -78,13 +81,13 @@ const Navbar: React.FC = () => {
                     onClick={navigateToRoleDashboard}
                     className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
-                    Dashboard
+                    {t('nav.dashboard')}
                   </button>
                   <button
                     onClick={handleLogout}
                     className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                   >
-                    Sign out
+                    {t('nav.signout')}
                   </button>
                 </div>
               )}
@@ -96,89 +99,94 @@ const Navbar: React.FC = () => {
                 className="border-primary text-primary hover:bg-primary hover:text-white"
                 onClick={() => navigate('/login')}
               >
-                Login
+                {t('nav.login')}
               </Button>
               <Button 
                 className="bg-primary hover:bg-primary-dark text-white"
                 onClick={() => navigate('/register')}
               >
-                Sign Up
+                {t('nav.signup')}
               </Button>
             </div>
           )}
+          
+          <LanguageSwitcher />
         </div>
 
         {/* Mobile Menu Button */}
-        <Sheet>
-          <SheetTrigger asChild>
-            <button className="md:hidden text-gray-700">
-              <Menu size={24} />
-            </button>
-          </SheetTrigger>
-          <SheetContent side="right">
-            <nav className="flex flex-col space-y-4 mt-8">
-              <Link 
-                to="/events" 
-                className="text-gray-700 hover:text-primary font-medium py-2"
-              >
-                Events
-              </Link>
-              <Link 
-                to="/about" 
-                className="text-gray-700 hover:text-primary font-medium py-2"
-              >
-                About
-              </Link>
-              <Link 
-                to="/contact" 
-                className="text-gray-700 hover:text-primary font-medium py-2"
-              >
-                Contact
-              </Link>
-              
-              <div className="pt-4 border-t border-gray-100">
-                {user ? (
-                  <>
-                    <div className="mb-4 px-1">
-                      <div className="font-medium">{user.name || user.email}</div>
-                      <div className="text-sm text-gray-500">{user.role || 'No role selected'}</div>
-                    </div>
-                    <Button 
-                      variant="outline" 
-                      className="w-full mb-2"
-                      onClick={navigateToRoleDashboard}
-                    >
-                      Dashboard
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      className="w-full text-red-500 border-red-200 hover:bg-red-50"
-                      onClick={handleLogout}
-                    >
-                      Sign Out
-                    </Button>
-                  </>
-                ) : (
-                  <>
-                    <Button 
-                      variant="outline" 
-                      className="w-full mb-2 border-primary text-primary hover:bg-primary hover:text-white"
-                      onClick={() => navigate('/login')}
-                    >
-                      Login
-                    </Button>
-                    <Button 
-                      className="w-full bg-primary hover:bg-primary-dark text-white"
-                      onClick={() => navigate('/register')}
-                    >
-                      Sign Up
-                    </Button>
-                  </>
-                )}
-              </div>
-            </nav>
-          </SheetContent>
-        </Sheet>
+        <div className="md:hidden flex items-center gap-4">
+          <LanguageSwitcher />
+          <Sheet>
+            <SheetTrigger asChild>
+              <button className="text-gray-700">
+                <Menu size={24} />
+              </button>
+            </SheetTrigger>
+            <SheetContent side="right">
+              <nav className="flex flex-col space-y-4 mt-8">
+                <Link 
+                  to="/events" 
+                  className="text-gray-700 hover:text-primary font-medium py-2"
+                >
+                  {t('nav.events')}
+                </Link>
+                <Link 
+                  to="/about" 
+                  className="text-gray-700 hover:text-primary font-medium py-2"
+                >
+                  {t('nav.about')}
+                </Link>
+                <Link 
+                  to="/contact" 
+                  className="text-gray-700 hover:text-primary font-medium py-2"
+                >
+                  {t('nav.contact')}
+                </Link>
+                
+                <div className="pt-4 border-t border-gray-100">
+                  {user ? (
+                    <>
+                      <div className="mb-4 px-1">
+                        <div className="font-medium">{user.name || user.email}</div>
+                        <div className="text-sm text-gray-500">{user.role || 'No role selected'}</div>
+                      </div>
+                      <Button 
+                        variant="outline" 
+                        className="w-full mb-2"
+                        onClick={navigateToRoleDashboard}
+                      >
+                        {t('nav.dashboard')}
+                      </Button>
+                      <Button 
+                        variant="outline" 
+                        className="w-full text-red-500 border-red-200 hover:bg-red-50"
+                        onClick={handleLogout}
+                      >
+                        {t('nav.signout')}
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <Button 
+                        variant="outline" 
+                        className="w-full mb-2 border-primary text-primary hover:bg-primary hover:text-white"
+                        onClick={() => navigate('/login')}
+                      >
+                        {t('nav.login')}
+                      </Button>
+                      <Button 
+                        className="w-full bg-primary hover:bg-primary-dark text-white"
+                        onClick={() => navigate('/register')}
+                      >
+                        {t('nav.signup')}
+                      </Button>
+                    </>
+                  )}
+                </div>
+              </nav>
+            </SheetContent>
+          </Sheet>
+        </div>
       </div>
     </nav>
   );

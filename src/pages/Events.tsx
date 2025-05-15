@@ -8,11 +8,13 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Search } from 'lucide-react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Events: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredEvents, setFilteredEvents] = useState<EventProps[]>(allEvents);
   const [activeTab, setActiveTab] = useState('all');
+  const { t } = useLanguage();
 
   // Handle search and filtering
   useEffect(() => {
@@ -45,14 +47,14 @@ const Events: React.FC = () => {
       <div className="bg-gray-50 py-12">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto">
-            <h1 className="text-3xl md:text-4xl font-bold mb-6 text-center">Discover Events</h1>
+            <h1 className="text-3xl md:text-4xl font-bold mb-6 text-center">{t('events.title')}</h1>
             
             {/* Search Bar */}
             <div className="relative mb-8">
               <Search className="absolute left-3 top-3 h-4 w-4 text-gray-500" />
               <Input
                 type="text"
-                placeholder="Search events by name, location, or type..."
+                placeholder={t('events.search.placeholder')}
                 className="pl-10 py-6"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
@@ -61,18 +63,18 @@ const Events: React.FC = () => {
                 className="absolute right-1 top-1 bg-oceanBlue hover:bg-oceanBlue-dark" 
                 onClick={() => setSearchTerm(searchTerm)}
               >
-                Search
+                {t('events.search.button')}
               </Button>
             </div>
             
             {/* Event Type Tabs */}
             <Tabs defaultValue="all" value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="w-full grid grid-cols-3 md:grid-cols-5">
-                <TabsTrigger value="all">All</TabsTrigger>
-                <TabsTrigger value="technology">Technology</TabsTrigger>
-                <TabsTrigger value="music">Music</TabsTrigger>
-                <TabsTrigger value="sports">Sports</TabsTrigger>
-                <TabsTrigger value="investment">Investment</TabsTrigger>
+                <TabsTrigger value="all">{t('events.tabs.all')}</TabsTrigger>
+                <TabsTrigger value="technology">{t('events.tabs.technology')}</TabsTrigger>
+                <TabsTrigger value="music">{t('events.tabs.music')}</TabsTrigger>
+                <TabsTrigger value="sports">{t('events.tabs.sports')}</TabsTrigger>
+                <TabsTrigger value="investment">{t('events.tabs.investment')}</TabsTrigger>
               </TabsList>
             </Tabs>
           </div>
@@ -82,14 +84,16 @@ const Events: React.FC = () => {
       <div className="container mx-auto px-4 py-10">
         {filteredEvents.length > 0 ? (
           <>
-            <p className="mb-6 text-gray-600">{filteredEvents.length} events found</p>
+            <p className="mb-6 text-gray-600">
+              {t('events.results').replace('{count}', filteredEvents.length.toString())}
+            </p>
             <EventList events={filteredEvents} />
           </>
         ) : (
           <div className="text-center py-16">
-            <h3 className="text-xl font-medium mb-2">No events found</h3>
-            <p className="text-gray-600 mb-6">Try adjusting your search or filters</p>
-            <Button onClick={() => {setSearchTerm(''); setActiveTab('all');}}>Clear filters</Button>
+            <h3 className="text-xl font-medium mb-2">{t('events.noResults.title')}</h3>
+            <p className="text-gray-600 mb-6">{t('events.noResults.subtitle')}</p>
+            <Button onClick={() => {setSearchTerm(''); setActiveTab('all');}}>{t('events.noResults.button')}</Button>
           </div>
         )}
       </div>

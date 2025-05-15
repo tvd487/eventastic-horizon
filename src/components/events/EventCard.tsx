@@ -5,6 +5,7 @@ import { Calendar, MapPin, Users } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { isValid, parseISO, format } from 'date-fns';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export interface EventProps {
   id: string;
@@ -27,6 +28,8 @@ const EventCard: React.FC<EventProps> = ({
   attendees, 
   price 
 }) => {
+  const { t } = useLanguage();
+
   // Helper function to safely format dates if needed
   const formatEventDate = (dateString: string) => {
     // If the date is already a formatted string like "June 15-18, 2025", return it as is
@@ -80,11 +83,11 @@ const EventCard: React.FC<EventProps> = ({
         <CardFooter className="border-t border-gray-100 pt-4 flex justify-between">
           <div className="flex items-center text-gray-600 text-sm">
             <Users className="h-4 w-4 mr-1" />
-            <span>{attendees} attending</span>
+            <span>{attendees} {t('event.attending')}</span>
           </div>
           <div className="font-medium">
             {price === 'Free' ? (
-              <span className="text-green-600">Free</span>
+              <span className="text-green-600">{t('event.free')}</span>
             ) : (
               <span>${price}</span>
             )}

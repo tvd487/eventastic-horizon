@@ -2,8 +2,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Calendar } from "lucide-react";
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const Footer: React.FC = () => {
+  const { t } = useLanguage();
+  const currentYear = new Date().getFullYear();
+
   return (
     <footer className="bg-gray-50 border-t border-gray-200 pt-12 pb-8">
       <div className="container mx-auto px-4">
@@ -17,32 +21,32 @@ const Footer: React.FC = () => {
               </span>
             </Link>
             <p className="mt-4 text-gray-600 max-w-md">
-              Eventomorrow is your all-in-one platform for managing events of any size. From sports to music, investment to technology - we've got you covered.
+              {t('footer.description')}
             </p>
           </div>
           
           {/* Quick Links */}
           <div className="col-span-1">
-            <h3 className="text-sm font-semibold text-gray-800 uppercase tracking-wider">Quick Links</h3>
+            <h3 className="text-sm font-semibold text-gray-800 uppercase tracking-wider">{t('footer.quickLinks')}</h3>
             <ul className="mt-4 space-y-2">
               <li>
                 <Link to="/events" className="text-gray-600 hover:text-oceanBlue transition-colors">
-                  Browse Events
+                  {t('footer.browseEvents')}
                 </Link>
               </li>
               <li>
                 <Link to="/about" className="text-gray-600 hover:text-oceanBlue transition-colors">
-                  About Us
+                  {t('footer.aboutUs')}
                 </Link>
               </li>
               <li>
                 <Link to="/contact" className="text-gray-600 hover:text-oceanBlue transition-colors">
-                  Contact
+                  {t('footer.contact')}
                 </Link>
               </li>
               <li>
                 <Link to="/faq" className="text-gray-600 hover:text-oceanBlue transition-colors">
-                  FAQs
+                  {t('footer.faqs')}
                 </Link>
               </li>
             </ul>
@@ -50,26 +54,26 @@ const Footer: React.FC = () => {
           
           {/* Account */}
           <div className="col-span-1">
-            <h3 className="text-sm font-semibold text-gray-800 uppercase tracking-wider">Account</h3>
+            <h3 className="text-sm font-semibold text-gray-800 uppercase tracking-wider">{t('footer.account')}</h3>
             <ul className="mt-4 space-y-2">
               <li>
                 <Link to="/login" className="text-gray-600 hover:text-oceanBlue transition-colors">
-                  Login
+                  {t('footer.login')}
                 </Link>
               </li>
               <li>
                 <Link to="/signup" className="text-gray-600 hover:text-oceanBlue transition-colors">
-                  Sign Up
+                  {t('footer.signup')}
                 </Link>
               </li>
               <li>
                 <Link to="/organizers" className="text-gray-600 hover:text-oceanBlue transition-colors">
-                  For Organizers
+                  {t('footer.forOrganizers')}
                 </Link>
               </li>
               <li>
                 <Link to="/help" className="text-gray-600 hover:text-oceanBlue transition-colors">
-                  Help Center
+                  {t('footer.helpCenter')}
                 </Link>
               </li>
             </ul>
@@ -80,17 +84,17 @@ const Footer: React.FC = () => {
         <div className="mt-12 pt-6 border-t border-gray-200">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-sm text-gray-600">
-              &copy; {new Date().getFullYear()} Eventomorrow. All rights reserved.
+              {t('footer.copyright').replace('{year}', currentYear.toString())}
             </p>
             <div className="mt-4 md:mt-0 flex space-x-6">
               <Link to="/privacy" className="text-sm text-gray-600 hover:text-oceanBlue transition-colors">
-                Privacy Policy
+                {t('footer.privacyPolicy')}
               </Link>
               <Link to="/terms" className="text-sm text-gray-600 hover:text-oceanBlue transition-colors">
-                Terms of Service
+                {t('footer.termsOfService')}
               </Link>
               <Link to="/cookies" className="text-sm text-gray-600 hover:text-oceanBlue transition-colors">
-                Cookie Policy
+                {t('footer.cookiePolicy')}
               </Link>
             </div>
           </div>
