@@ -7,13 +7,15 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Calendar, Users, Settings, Image, Plus, Trash2, Clock, List, Building, Award, Upload } from 'lucide-react';
+import { Calendar, Users, Settings, Image, Plus, Trash2, Clock, List, Building, Award, Upload, Ticket, CircleDollarSign, BadgeCheck } from 'lucide-react';
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { cn } from "@/lib/utils";
+import { Switch } from "@/components/ui/switch";
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 
 // Define types
 interface Speaker {
@@ -59,6 +61,20 @@ interface EventDay {
   activities: Activity[];
 }
 
+interface TicketType {
+  id: string;
+  name: string;
+  description?: string;
+  price: number; 
+  quantity: number;
+  saleStartDate?: string;
+  saleEndDate?: string;
+  isEarlyBird: boolean;
+  earlyBirdDiscount?: number;
+  isVIP: boolean;
+  category?: string; // e.g., "General", "Student", "Section A", "VIP Area", etc.
+}
+
 interface EventData {
   title: string;
   description: string;
@@ -70,6 +86,8 @@ interface EventData {
   speakers: Speaker[];
   sponsors: Sponsor[];
   booths: ExhibitionBooth[];
+  isFreeEvent: boolean;
+  ticketTypes: TicketType[];
 }
 
 const CreateEvent: React.FC = () => {
@@ -86,7 +104,9 @@ const CreateEvent: React.FC = () => {
     days: [],
     speakers: [],
     sponsors: [],
-    booths: []
+    booths: [],
+    isFreeEvent: true,
+    ticketTypes: []
   });
 
   // State for new speaker form
@@ -129,10 +149,38 @@ const CreateEvent: React.FC = () => {
     speakerIds: [],
   });
 
+  // State for new ticket type form
+  const [newTicketType, setNewTicketType] = useState<Omit<TicketType, 'id'>>({
+    name: '',
+    description: '',
+    price: 0,
+    quantity: 100,
+    saleStartDate: '',
+    saleEndDate: '',
+    isEarlyBird: false,
+    earlyBirdDiscount: 0,
+    isVIP: false,
+    category: 'General'
+  });
+
   // Handler for basic info fields
   const handleBasicInfoChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { id, value } = e.target;
     setEventData(prev => ({ ...prev, [id]: value }));
+  };
+
+  // Toggle free event status
+  const handleToggleFreeEvent = (checked: boolean) => {
+    setEventData(prev => ({ ...prev, isFreeEvent: checked }));
+    
+    // If switching to free, clear any existing ticket types
+    if (checked && eventData.ticketTypes.length > 0) {
+      if (window.confirm("Converting to a free event will remove all ticket types. Continue?")) {
+        setEventData(prev => ({ ...prev, ticketTypes: [] }));
+      } else {
+        setEventData(prev => ({ ...prev, isFreeEvent: false }));
+      }
+    }
   };
 
   // Handler for date changes - creates event days
@@ -169,6 +217,16 @@ const CreateEvent: React.FC = () => {
       setEventData(prev => ({ ...prev, days }));
       if (days.length > 0 && !selectedDayId) {
         setSelectedDayId(days[0].id);
+      }
+      
+      // Set ticket sale dates based on event dates if they're empty
+      if (!newTicketType.saleStartDate) {
+        const today = new Date().toISOString().split('T')[0];
+        setNewTicketType(prev => ({
+          ...prev,
+          saleStartDate: today,
+          saleEndDate: id === 'endDate' ? value : eventData.endDate,
+        }));
       }
     }
   };
@@ -343,6 +401,70 @@ const CreateEvent: React.FC = () => {
     });
   };
 
+  // Handler to add ticket type
+  const handleAddTicketType = () => {
+    if (!newTicketType.name.trim()) {
+      alert("Ticket name is required");
+      return;
+    }
+
+    if (!eventData.isFreeEvent && newTicketType.price <= 0) {
+      alert("Ticket price must be greater than 0 for paid events");
+      return;
+    }
+
+    const newTicketWithId: TicketType = {
+      ...newTicketType,
+      id: `ticket-${Date.now()}`,
+      price: eventData.isFreeEvent ? 0 : newTicketType.price,
+    };
+
+    setEventData(prev => ({
+      ...prev,
+      ticketTypes: [...prev.ticketTypes, newTicketWithId],
+    }));
+
+    setNewTicketType({
+      name: '',
+      description: '',
+      price: 0,
+      quantity: 100,
+      saleStartDate: newTicketType.saleStartDate,
+      saleEndDate: newTicketType.saleEndDate,
+      isEarlyBird: false,
+      earlyBirdDiscount: 0,
+      isVIP: false,
+      category: 'General'
+    });
+  };
+
+  // Handler to remove ticket type
+  const handleRemoveTicketType = (ticketId: string) => {
+    setEventData(prev => ({
+      ...prev,
+      ticketTypes: prev.ticketTypes.filter(ticket => ticket.id !== ticketId)
+    }));
+  };
+
+  // Handler for ticket type field changes
+  const handleTicketChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target;
+    const numValue = type === 'number' ? parseFloat(value) : value;
+    
+    setNewTicketType(prev => ({
+      ...prev,
+      [name]: numValue,
+    }));
+  };
+
+  // Handler for checkbox/switch controls in ticket form
+  const handleTicketToggle = (field: keyof TicketType, value: boolean) => {
+    setNewTicketType(prev => ({
+      ...prev,
+      [field]: value,
+    }));
+  };
+
   // Handler to remove activity
   const handleRemoveActivity = (dayId: string, activityId: string) => {
     setEventData(prev => ({
@@ -386,6 +508,12 @@ const CreateEvent: React.FC = () => {
       return;
     }
     
+    // Check if there's at least one ticket type for paid events
+    if (!eventData.isFreeEvent && eventData.ticketTypes.length === 0) {
+      alert("Please add at least one ticket type for this paid event.");
+      return;
+    }
+    
     // In a real app, we would send data to server
     console.log("Submitted event data:", eventData);
     alert("Event successfully created!");
@@ -400,6 +528,14 @@ const CreateEvent: React.FC = () => {
   // Helper to format time
   const formatTime = (time: string) => {
     return time;
+  };
+
+  // Format currency
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+    }).format(amount);
   };
 
   // Helper to sort activities by start time
@@ -428,6 +564,19 @@ const CreateEvent: React.FC = () => {
     }
   };
 
+  // Get ticket category badge color
+  const getTicketCategoryColor = (category: string, isVIP: boolean) => {
+    if (isVIP) return 'bg-purple-500 hover:bg-purple-600 text-white';
+    
+    switch (category) {
+      case 'General': return 'bg-blue-500 hover:bg-blue-600 text-white';
+      case 'Student': return 'bg-green-500 hover:bg-green-600 text-white';
+      case 'Section A': return 'bg-orange-500 hover:bg-orange-600 text-white';
+      case 'Section B': return 'bg-yellow-500 hover:bg-yellow-600 text-yellow-900';
+      default: return 'bg-gray-500 hover:bg-gray-600 text-white';
+    }
+  };
+
   return (
     <MainLayout>
       <div className="container mx-auto px-4 py-8">
@@ -443,8 +592,9 @@ const CreateEvent: React.FC = () => {
         
         <Card className="mb-8">
           <Tabs defaultValue="basic" className="w-full">
-            <TabsList className="grid w-full grid-cols-6">
+            <TabsList className="grid w-full grid-cols-7">
               <TabsTrigger value="basic">Basic Info</TabsTrigger>
+              <TabsTrigger value="tickets">Tickets</TabsTrigger>
               <TabsTrigger value="speakers">Speakers</TabsTrigger>
               <TabsTrigger value="schedule">Schedule</TabsTrigger>
               <TabsTrigger value="sponsors">Sponsors</TabsTrigger>
@@ -526,8 +676,17 @@ const CreateEvent: React.FC = () => {
                     </div>
                   </div>
                   
+                  <div className="flex items-center space-x-2">
+                    <Switch 
+                      id="isFreeEvent"
+                      checked={eventData.isFreeEvent}
+                      onCheckedChange={handleToggleFreeEvent}
+                    />
+                    <Label htmlFor="isFreeEvent" className="cursor-pointer">This is a free event (no tickets required)</Label>
+                  </div>
+                  
                   <div className="flex justify-end pt-4">
-                    <Button type="button" onClick={() => navigateToTab("speakers")}>
+                    <Button type="button" onClick={() => navigateToTab("tickets")}>
                       Save & Continue
                     </Button>
                   </div>
@@ -535,7 +694,299 @@ const CreateEvent: React.FC = () => {
               </CardContent>
             </TabsContent>
             
-            {/* New Speakers Tab */}
+            {/* New Tickets Tab */}
+            <TabsContent value="tickets">
+              <CardContent className="pt-6">
+                <div className="space-y-6">
+                  <div className="flex items-center justify-between">
+                    <h3 className="text-lg font-medium mb-4">
+                      {eventData.isFreeEvent ? "Free Event" : "Ticket Management"}
+                    </h3>
+                    <div className="flex items-center space-x-2">
+                      <Switch 
+                        id="isFreeEvent-tickets"
+                        checked={eventData.isFreeEvent}
+                        onCheckedChange={handleToggleFreeEvent}
+                      />
+                      <Label htmlFor="isFreeEvent-tickets" className="cursor-pointer">Free Event</Label>
+                    </div>
+                  </div>
+                  
+                  {eventData.isFreeEvent ? (
+                    <div className="bg-blue-50 p-6 rounded-lg border border-blue-200 flex items-center space-x-4">
+                      <BadgeCheck className="h-12 w-12 text-blue-600" />
+                      <div>
+                        <h4 className="font-medium text-blue-800">This is a free event</h4>
+                        <p className="text-blue-600">Attendees will be able to register without purchasing tickets</p>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      {/* Display existing ticket types */}
+                      {eventData.ticketTypes.length > 0 ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+                          {eventData.ticketTypes.map(ticket => (
+                            <Card key={ticket.id} className="relative overflow-hidden group">
+                              <Button 
+                                variant="ghost" 
+                                size="icon" 
+                                className="absolute top-2 right-2 h-6 w-6 text-destructive" 
+                                onClick={() => handleRemoveTicketType(ticket.id)}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                              
+                              {ticket.isVIP && (
+                                <div className="absolute top-0 right-0 bg-purple-600 text-white px-3 py-1 rotate-45 translate-x-6 translate-y-1">
+                                  VIP
+                                </div>
+                              )}
+                              
+                              <CardContent className="pt-6">
+                                <div className="flex justify-between items-start">
+                                  <div>
+                                    <h4 className="font-medium text-lg">{ticket.name}</h4>
+                                    <Badge className={cn("mt-1", getTicketCategoryColor(ticket.category || 'General', ticket.isVIP))}>
+                                      {ticket.category}
+                                    </Badge>
+                                    {ticket.description && (
+                                      <p className="text-sm text-muted-foreground mt-2">{ticket.description}</p>
+                                    )}
+                                  </div>
+                                  <div className="text-right">
+                                    <p className="text-xl font-semibold text-blue-600">
+                                      {formatCurrency(ticket.price)}
+                                    </p>
+                                    <p className="text-sm text-muted-foreground">
+                                      {ticket.quantity} available
+                                    </p>
+                                  </div>
+                                </div>
+                                
+                                <div className="mt-4 pt-4 border-t grid grid-cols-2 gap-2 text-sm">
+                                  <div>
+                                    <p className="text-muted-foreground">Sale Start:</p>
+                                    <p>{ticket.saleStartDate || 'Not set'}</p>
+                                  </div>
+                                  <div>
+                                    <p className="text-muted-foreground">Sale End:</p>
+                                    <p>{ticket.saleEndDate || 'Not set'}</p>
+                                  </div>
+                                  
+                                  {ticket.isEarlyBird && ticket.earlyBirdDiscount && ticket.earlyBirdDiscount > 0 && (
+                                    <div className="col-span-2 mt-2 bg-yellow-50 p-2 rounded">
+                                      <p className="font-medium text-yellow-800">
+                                        Early Bird Discount: {ticket.earlyBirdDiscount}% off
+                                      </p>
+                                    </div>
+                                  )}
+                                </div>
+                              </CardContent>
+                            </Card>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="text-center py-8 bg-slate-50 rounded-lg border border-slate-200">
+                          <Ticket className="mx-auto h-12 w-12 text-slate-400" />
+                          <h3 className="mt-4 text-lg font-medium">No Tickets Created Yet</h3>
+                          <p className="mt-2 text-sm text-muted-foreground">
+                            Create tickets for your event using the form below
+                          </p>
+                        </div>
+                      )}
+                      
+                      {/* Form to add new ticket type */}
+                      <Card className="mt-8">
+                        <CardHeader>
+                          <CardTitle className="text-md">Add New Ticket Type</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div className="space-y-2">
+                              <Label htmlFor="ticketName">Ticket Name</Label>
+                              <Input 
+                                id="ticketName"
+                                name="name"
+                                value={newTicketType.name} 
+                                onChange={handleTicketChange}
+                                placeholder="e.g., General Admission, VIP Pass"
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="ticketCategory">Category</Label>
+                              <select 
+                                id="ticketCategory"
+                                name="category" 
+                                className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
+                                value={newTicketType.category}
+                                onChange={handleTicketChange}
+                              >
+                                <option value="General">General</option>
+                                <option value="Student">Student</option>
+                                <option value="Section A">Section A</option>
+                                <option value="Section B">Section B</option>
+                                <option value="Premium">Premium</option>
+                              </select>
+                            </div>
+                          </div>
+                          
+                          <div className="space-y-2 mb-4">
+                            <Label htmlFor="ticketDescription">Description (optional)</Label>
+                            <Textarea 
+                              id="ticketDescription"
+                              name="description"
+                              value={newTicketType.description} 
+                              onChange={handleTicketChange}
+                              placeholder="What's included with this ticket type"
+                              rows={2}
+                            />
+                          </div>
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div className="space-y-2">
+                              <Label htmlFor="ticketPrice">Price ($)</Label>
+                              <Input 
+                                id="ticketPrice"
+                                name="price"
+                                type="number" 
+                                step="0.01"
+                                min="0"
+                                value={newTicketType.price} 
+                                onChange={handleTicketChange}
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="ticketQuantity">Available Quantity</Label>
+                              <Input 
+                                id="ticketQuantity"
+                                name="quantity"
+                                type="number" 
+                                min="1"
+                                value={newTicketType.quantity} 
+                                onChange={handleTicketChange}
+                              />
+                            </div>
+                          </div>
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                            <div className="space-y-2">
+                              <Label htmlFor="ticketSaleStartDate">Sale Start Date</Label>
+                              <Input 
+                                id="ticketSaleStartDate"
+                                name="saleStartDate"
+                                type="date" 
+                                value={newTicketType.saleStartDate} 
+                                onChange={handleTicketChange}
+                              />
+                            </div>
+                            <div className="space-y-2">
+                              <Label htmlFor="ticketSaleEndDate">Sale End Date</Label>
+                              <Input 
+                                id="ticketSaleEndDate"
+                                name="saleEndDate"
+                                type="date" 
+                                value={newTicketType.saleEndDate} 
+                                onChange={handleTicketChange}
+                              />
+                            </div>
+                          </div>
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div className="space-y-4">
+                              <div className="flex items-center space-x-2">
+                                <Switch 
+                                  id="isVIP"
+                                  checked={newTicketType.isVIP}
+                                  onCheckedChange={(checked) => handleTicketToggle('isVIP', checked)}
+                                />
+                                <Label htmlFor="isVIP" className="cursor-pointer">VIP Ticket</Label>
+                              </div>
+                            </div>
+                            
+                            <div className="space-y-4">
+                              <div className="flex items-center space-x-2">
+                                <Switch 
+                                  id="isEarlyBird"
+                                  checked={newTicketType.isEarlyBird}
+                                  onCheckedChange={(checked) => handleTicketToggle('isEarlyBird', checked)}
+                                />
+                                <Label htmlFor="isEarlyBird" className="cursor-pointer">Early Bird Discount</Label>
+                              </div>
+                              
+                              {newTicketType.isEarlyBird && (
+                                <div className="flex items-center space-x-2">
+                                  <Input 
+                                    id="earlyBirdDiscount"
+                                    name="earlyBirdDiscount"
+                                    type="number"
+                                    min="1"
+                                    max="99" 
+                                    value={newTicketType.earlyBirdDiscount} 
+                                    onChange={handleTicketChange}
+                                    className="w-20"
+                                  />
+                                  <span>% discount</span>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </CardContent>
+                        <CardFooter className="flex justify-between border-t pt-4">
+                          <Button variant="outline" onClick={() => navigateToTab("basic")}>
+                            Back
+                          </Button>
+                          <Button onClick={handleAddTicketType} className="flex items-center gap-2">
+                            <Plus size={16} /> Add Ticket
+                          </Button>
+                        </CardFooter>
+                      </Card>
+                      
+                      {/* Pricing and revenue preview */}
+                      {eventData.ticketTypes.length > 0 && (
+                        <Card className="mt-6">
+                          <CardHeader>
+                            <CardTitle className="text-md">Revenue Preview</CardTitle>
+                            <CardDescription>
+                              Estimated revenue based on ticket sales
+                            </CardDescription>
+                          </CardHeader>
+                          <CardContent>
+                            <div className="space-y-2">
+                              {eventData.ticketTypes.map(ticket => (
+                                <div key={ticket.id} className="flex justify-between items-center py-2 border-b last:border-0">
+                                  <div>
+                                    <p className="font-medium">{ticket.name}</p>
+                                    <p className="text-sm text-muted-foreground">{ticket.quantity} tickets × {formatCurrency(ticket.price)}</p>
+                                  </div>
+                                  <p className="font-semibold">{formatCurrency(ticket.quantity * ticket.price)}</p>
+                                </div>
+                              ))}
+                              
+                              <div className="flex justify-between items-center pt-4 border-t">
+                                <p className="font-medium">Potential Total Revenue</p>
+                                <p className="font-bold text-lg">
+                                  {formatCurrency(
+                                    eventData.ticketTypes.reduce((sum, ticket) => sum + (ticket.price * ticket.quantity), 0)
+                                  )}
+                                </p>
+                              </div>
+                            </div>
+                          </CardContent>
+                        </Card>
+                      )}
+                    </div>
+                  )}
+                  
+                  <div className="flex justify-end pt-4">
+                    <Button onClick={() => navigateToTab("speakers")}>
+                      Continue to Speakers
+                    </Button>
+                  </div>
+                </div>
+              </CardContent>
+            </TabsContent>
+            
+            {/* Speakers Tab */}
             <TabsContent value="speakers">
               <CardContent className="pt-6">
                 <div className="space-y-6">
@@ -629,7 +1080,7 @@ const CreateEvent: React.FC = () => {
                       </div>
                     </CardContent>
                     <CardFooter className="flex justify-between border-t pt-4">
-                      <Button variant="outline" onClick={() => navigateToTab("basic")}>
+                      <Button variant="outline" onClick={() => navigateToTab("tickets")}>
                         Back
                       </Button>
                       <Button onClick={handleAddSpeaker} className="flex items-center gap-2">
@@ -646,7 +1097,8 @@ const CreateEvent: React.FC = () => {
                 </div>
               </CardContent>
             </TabsContent>
-            
+
+            {/* Schedule Tab */}
             <TabsContent value="schedule">
               <CardContent className="py-6">
                 {eventData.days.length === 0 ? (
