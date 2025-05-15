@@ -13,6 +13,13 @@ import {
 const LanguageSwitcher: React.FC = () => {
   const { language, setLanguage, t } = useLanguage();
 
+  // Function to handle language change
+  const handleLanguageChange = (lang: 'en' | 'vi') => {
+    setLanguage(lang);
+    // Force reload translations by updating localStorage
+    localStorage.setItem('language', lang);
+  };
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -22,10 +29,10 @@ const LanguageSwitcher: React.FC = () => {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={() => setLanguage('en')}>
+        <DropdownMenuItem onClick={() => handleLanguageChange('en')}>
           <span className={`${language === 'en' ? 'font-bold' : ''}`}>{t('language.en')}</span>
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={() => setLanguage('vi')}>
+        <DropdownMenuItem onClick={() => handleLanguageChange('vi')}>
           <span className={`${language === 'vi' ? 'font-bold' : ''}`}>{t('language.vi')}</span>
         </DropdownMenuItem>
       </DropdownMenuContent>
