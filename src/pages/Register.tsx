@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import MainLayout from '../components/layout/MainLayout';
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -27,6 +27,8 @@ const Register: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const location = useLocation();
+  const redirectPath = location.state?.redirectAfterLogin || '/select-role';
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -57,7 +59,7 @@ const Register: React.FC = () => {
         role: null // Role will be selected after registration
       }));
       
-      navigate('/select-role');
+      navigate(redirectPath);
     } catch (err) {
       setError("Registration failed. Please try again.");
       console.error("Registration error:", err);

@@ -51,8 +51,8 @@ const EventCard: React.FC<EventProps> = ({
   };
 
   return (
-    <Link to={`/events/${id}`}>
-      <Card className="event-card overflow-hidden border border-gray-200 h-full">
+    <Link to={`/events/${id}`} className="group block h-full">
+      <Card className="event-card overflow-hidden border border-gray-200 h-full transition-shadow hover:shadow-md">
         <div className="relative h-48 w-full overflow-hidden">
           <img 
             src={imageUrl} 
