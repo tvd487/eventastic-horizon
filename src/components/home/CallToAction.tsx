@@ -1,8 +1,7 @@
-
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { Link } from 'react-router-dom';
-import { useLanguage } from '@/contexts/LanguageContext';
+import { useLanguage } from '@/contexts/useLanguage';
 
 const CallToAction: React.FC = () => {
   const { t } = useLanguage();
@@ -20,7 +19,7 @@ const CallToAction: React.FC = () => {
               {t('home.cta.button.start')}
             </Link>
           </Button>
-          <Button size="lg" asChild variant="outline" className="border-white text-white hover:bg-white/10">
+          <Button size="lg" asChild className="bg-white text-oceanBlue hover:bg-gray-100">
             <Link to="/contact">
               {t('home.cta.button.contact')}
             </Link>
