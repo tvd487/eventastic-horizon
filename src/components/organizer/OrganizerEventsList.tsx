@@ -1,16 +1,18 @@
-
 import React from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { EventProps } from '../events/EventCard';
 import { Calendar, Users, Edit, Settings } from 'lucide-react';
 import { format, isValid, parseISO } from 'date-fns';
+import { useLanguage } from '@/contexts/useLanguage';
 
 interface OrganizerEventsListProps {
   events: EventProps[];
 }
 
 const OrganizerEventsList: React.FC<OrganizerEventsListProps> = ({ events }) => {
+  const { t } = useLanguage();
+
   // Helper function to safely format dates
   const formatEventDate = (dateString: string) => {
     try {
@@ -21,11 +23,10 @@ const OrganizerEventsList: React.FC<OrganizerEventsListProps> = ({ events }) => 
       if (isValid(date)) {
         return format(date, 'MMM dd, yyyy');
       }
-      
-      return 'Invalid date';
+      return t('common.invalidDate');
     } catch (error) {
       console.error('Error formatting date:', error, dateString);
-      return 'Invalid date';
+      return t('common.invalidDate');
     }
   };
 

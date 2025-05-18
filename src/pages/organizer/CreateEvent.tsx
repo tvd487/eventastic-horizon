@@ -16,6 +16,7 @@ import { AspectRatio } from "@/components/ui/aspect-ratio";
 import { cn } from "@/lib/utils";
 import { Switch } from "@/components/ui/switch";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { useLanguage } from '@/contexts/useLanguage';
 
 // Define types
 interface Speaker {
@@ -92,6 +93,7 @@ interface EventData {
 
 const CreateEvent: React.FC = () => {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   
   // Initialize event data state
   const [eventData, setEventData] = useState<EventData>({
@@ -175,7 +177,7 @@ const CreateEvent: React.FC = () => {
     
     // If switching to free, clear any existing ticket types
     if (checked && eventData.ticketTypes.length > 0) {
-      if (window.confirm("Converting to a free event will remove all ticket types. Continue?")) {
+      if (window.confirm(t('organizer.basic.convertToFreeConfirm'))) {
         setEventData(prev => ({ ...prev, ticketTypes: [] }));
       } else {
         setEventData(prev => ({ ...prev, isFreeEvent: false }));
@@ -195,7 +197,7 @@ const CreateEvent: React.FC = () => {
       
       // Check if start date is after end date
       if (start > end) {
-        alert("Start date cannot be after end date");
+        alert(t('organizer.basic.dateError'));
         return;
       }
       
@@ -404,12 +406,12 @@ const CreateEvent: React.FC = () => {
   // Handler to add ticket type
   const handleAddTicketType = () => {
     if (!newTicketType.name.trim()) {
-      alert("Ticket name is required");
+      alert(t('organizer.tickets.nameRequired'));
       return;
     }
 
     if (!eventData.isFreeEvent && newTicketType.price <= 0) {
-      alert("Ticket price must be greater than 0 for paid events");
+      alert(t('organizer.tickets.priceError'));
       return;
     }
 
@@ -504,19 +506,19 @@ const CreateEvent: React.FC = () => {
     
     // Check for required fields
     if (!eventData.title || !eventData.startDate || !eventData.endDate) {
-      alert("Please fill in all required event information.");
+      alert(t('organizer.createEvent.fillRequired'));
       return;
     }
     
     // Check if there's at least one ticket type for paid events
     if (!eventData.isFreeEvent && eventData.ticketTypes.length === 0) {
-      alert("Please add at least one ticket type for this paid event.");
+      alert(t('organizer.createEvent.ticketRequired'));
       return;
     }
     
     // In a real app, we would send data to server
     console.log("Submitted event data:", eventData);
-    alert("Event successfully created!");
+    alert(t('organizer.createEvent.success'));
     navigate('/organizer/dashboard');
   };
 
@@ -581,45 +583,42 @@ const CreateEvent: React.FC = () => {
     <MainLayout>
       <div className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-2xl font-bold">Create New Event</h1>
-          <Button 
-            variant="outline" 
-            onClick={() => navigate('/organizer/dashboard')}
-          >
-            Cancel
+          <h1 className="text-2xl font-bold">{t('organizer.createEventTitle')}</h1>
+          <Button variant="outline" onClick={() => navigate('/organizer/dashboard')}>
+            {t('organizer.cancel')}
           </Button>
         </div>
         
         <Card className="mb-8">
           <Tabs defaultValue="basic" className="w-full">
             <TabsList className="grid w-full grid-cols-7">
-              <TabsTrigger value="basic">Basic Info</TabsTrigger>
-              <TabsTrigger value="tickets">Tickets</TabsTrigger>
-              <TabsTrigger value="speakers">Speakers</TabsTrigger>
-              <TabsTrigger value="schedule">Schedule</TabsTrigger>
-              <TabsTrigger value="sponsors">Sponsors</TabsTrigger>
-              <TabsTrigger value="booths">Exhibition</TabsTrigger>
-              <TabsTrigger value="media">Media</TabsTrigger>
+              <TabsTrigger value="basic">{t('organizer.tabs.basic')}</TabsTrigger>
+              <TabsTrigger value="tickets">{t('organizer.tabs.tickets')}</TabsTrigger>
+              <TabsTrigger value="speakers">{t('organizer.tabs.speakers')}</TabsTrigger>
+              <TabsTrigger value="schedule">{t('organizer.tabs.schedule')}</TabsTrigger>
+              <TabsTrigger value="sponsors">{t('organizer.tabs.sponsors')}</TabsTrigger>
+              <TabsTrigger value="booths">{t('organizer.tabs.booths')}</TabsTrigger>
+              <TabsTrigger value="media">{t('organizer.tabs.media')}</TabsTrigger>
             </TabsList>
             
             <TabsContent value="basic">
               <CardContent className="pt-6">
                 <form className="space-y-6">
                   <div className="space-y-2">
-                    <Label htmlFor="title">Event Name</Label>
+                    <Label htmlFor="title">{t('organizer.basic.eventName')}</Label>
                     <Input 
                       id="title" 
-                      placeholder="Enter event name" 
+                      placeholder={t('organizer.basic.eventName.placeholder')} 
                       value={eventData.title} 
                       onChange={handleBasicInfoChange}
                     />
                   </div>
                   
                   <div className="space-y-2">
-                    <Label htmlFor="description">Description</Label>
+                    <Label htmlFor="description">{t('organizer.basic.description')}</Label>
                     <Textarea 
                       id="description" 
-                      placeholder="Describe your event..." 
+                      placeholder={t('organizer.basic.description.placeholder')} 
                       rows={5}
                       value={eventData.description}
                       onChange={handleBasicInfoChange}
@@ -628,7 +627,7 @@ const CreateEvent: React.FC = () => {
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <Label htmlFor="category">Category</Label>
+                      <Label htmlFor="category">{t('organizer.basic.category')}</Label>
                       <select 
                         id="category" 
                         className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
@@ -644,10 +643,10 @@ const CreateEvent: React.FC = () => {
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="location">Location</Label>
+                      <Label htmlFor="location">{t('organizer.basic.location')}</Label>
                       <Input 
                         id="location" 
-                        placeholder="Event venue or Online" 
+                        placeholder={t('organizer.basic.location.placeholder')} 
                         value={eventData.location} 
                         onChange={handleBasicInfoChange}
                       />
@@ -656,7 +655,7 @@ const CreateEvent: React.FC = () => {
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div className="space-y-2">
-                      <Label htmlFor="startDate">Start Date</Label>
+                      <Label htmlFor="startDate">{t('organizer.basic.startDate')}</Label>
                       <Input 
                         id="startDate" 
                         type="date" 
@@ -666,7 +665,7 @@ const CreateEvent: React.FC = () => {
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="endDate">End Date</Label>
+                      <Label htmlFor="endDate">{t('organizer.basic.endDate')}</Label>
                       <Input 
                         id="endDate" 
                         type="date" 
@@ -682,12 +681,12 @@ const CreateEvent: React.FC = () => {
                       checked={eventData.isFreeEvent}
                       onCheckedChange={handleToggleFreeEvent}
                     />
-                    <Label htmlFor="isFreeEvent" className="cursor-pointer">This is a free event (no tickets required)</Label>
+                    <Label htmlFor="isFreeEvent" className="cursor-pointer">{t('organizer.basic.isFreeEvent')}</Label>
                   </div>
                   
                   <div className="flex justify-end pt-4">
                     <Button type="button" onClick={() => navigateToTab("tickets")}>
-                      Save & Continue
+                      {t('organizer.basic.saveContinue')}
                     </Button>
                   </div>
                 </form>
@@ -700,7 +699,7 @@ const CreateEvent: React.FC = () => {
                 <div className="space-y-6">
                   <div className="flex items-center justify-between">
                     <h3 className="text-lg font-medium mb-4">
-                      {eventData.isFreeEvent ? "Free Event" : "Ticket Management"}
+                      {eventData.isFreeEvent ? t('organizer.tickets.freeEvent') : t('organizer.tickets.ticketManagement')}
                     </h3>
                     <div className="flex items-center space-x-2">
                       <Switch 
@@ -708,7 +707,7 @@ const CreateEvent: React.FC = () => {
                         checked={eventData.isFreeEvent}
                         onCheckedChange={handleToggleFreeEvent}
                       />
-                      <Label htmlFor="isFreeEvent-tickets" className="cursor-pointer">Free Event</Label>
+                      <Label htmlFor="isFreeEvent-tickets" className="cursor-pointer">{t('organizer.tickets.freeEvent')}</Label>
                     </div>
                   </div>
                   
@@ -716,8 +715,8 @@ const CreateEvent: React.FC = () => {
                     <div className="bg-blue-50 p-6 rounded-lg border border-blue-200 flex items-center space-x-4">
                       <BadgeCheck className="h-12 w-12 text-blue-600" />
                       <div>
-                        <h4 className="font-medium text-blue-800">This is a free event</h4>
-                        <p className="text-blue-600">Attendees will be able to register without purchasing tickets</p>
+                        <h4 className="font-medium text-blue-800">{t('organizer.tickets.freeEvent')}</h4>
+                        <p className="text-blue-600">{t('organizer.tickets.createTickets')}</p>
                       </div>
                     </div>
                   ) : (
@@ -758,25 +757,25 @@ const CreateEvent: React.FC = () => {
                                       {formatCurrency(ticket.price)}
                                     </p>
                                     <p className="text-sm text-muted-foreground">
-                                      {ticket.quantity} available
+                                      {ticket.quantity} {t('organizer.tickets.available')}
                                     </p>
                                   </div>
                                 </div>
                                 
                                 <div className="mt-4 pt-4 border-t grid grid-cols-2 gap-2 text-sm">
                                   <div>
-                                    <p className="text-muted-foreground">Sale Start:</p>
-                                    <p>{ticket.saleStartDate || 'Not set'}</p>
+                                    <p className="text-muted-foreground">{t('organizer.tickets.saleStart')}:</p>
+                                    <p>{ticket.saleStartDate || t('organizer.tickets.notSet')}</p>
                                   </div>
                                   <div>
-                                    <p className="text-muted-foreground">Sale End:</p>
-                                    <p>{ticket.saleEndDate || 'Not set'}</p>
+                                    <p className="text-muted-foreground">{t('organizer.tickets.saleEnd')}:</p>
+                                    <p>{ticket.saleEndDate || t('organizer.tickets.notSet')}</p>
                                   </div>
                                   
                                   {ticket.isEarlyBird && ticket.earlyBirdDiscount && ticket.earlyBirdDiscount > 0 && (
                                     <div className="col-span-2 mt-2 bg-yellow-50 p-2 rounded">
                                       <p className="font-medium text-yellow-800">
-                                        Early Bird Discount: {ticket.earlyBirdDiscount}% off
+                                        {t('organizer.tickets.earlyBirdDiscount')}: {ticket.earlyBirdDiscount}% {t('organizer.tickets.off')}
                                       </p>
                                     </div>
                                   )}
@@ -788,9 +787,9 @@ const CreateEvent: React.FC = () => {
                       ) : (
                         <div className="text-center py-8 bg-slate-50 rounded-lg border border-slate-200">
                           <Ticket className="mx-auto h-12 w-12 text-slate-400" />
-                          <h3 className="mt-4 text-lg font-medium">No Tickets Created Yet</h3>
+                          <h3 className="mt-4 text-lg font-medium">{t('organizer.tickets.noTickets')}</h3>
                           <p className="mt-2 text-sm text-muted-foreground">
-                            Create tickets for your event using the form below
+                            {t('organizer.tickets.createTickets')}
                           </p>
                         </div>
                       )}
@@ -798,22 +797,22 @@ const CreateEvent: React.FC = () => {
                       {/* Form to add new ticket type */}
                       <Card className="mt-8">
                         <CardHeader>
-                          <CardTitle className="text-md">Add New Ticket Type</CardTitle>
+                          <CardTitle className="text-md">{t('organizer.tickets.addTicket')}</CardTitle>
                         </CardHeader>
                         <CardContent>
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                             <div className="space-y-2">
-                              <Label htmlFor="ticketName">Ticket Name</Label>
+                              <Label htmlFor="ticketName">{t('organizer.tickets.ticketName')}</Label>
                               <Input 
                                 id="ticketName"
                                 name="name"
                                 value={newTicketType.name} 
                                 onChange={handleTicketChange}
-                                placeholder="e.g., General Admission, VIP Pass"
+                                placeholder={t('organizer.tickets.ticketName.placeholder')}
                               />
                             </div>
                             <div className="space-y-2">
-                              <Label htmlFor="ticketCategory">Category</Label>
+                              <Label htmlFor="ticketCategory">{t('organizer.tickets.category')}</Label>
                               <select 
                                 id="ticketCategory"
                                 name="category" 
@@ -831,20 +830,20 @@ const CreateEvent: React.FC = () => {
                           </div>
                           
                           <div className="space-y-2 mb-4">
-                            <Label htmlFor="ticketDescription">Description (optional)</Label>
+                            <Label htmlFor="ticketDescription">{t('organizer.tickets.description')}</Label>
                             <Textarea 
                               id="ticketDescription"
                               name="description"
                               value={newTicketType.description} 
                               onChange={handleTicketChange}
-                              placeholder="What's included with this ticket type"
+                              placeholder={t('organizer.tickets.description.placeholder')}
                               rows={2}
                             />
                           </div>
                           
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                             <div className="space-y-2">
-                              <Label htmlFor="ticketPrice">Price ($)</Label>
+                              <Label htmlFor="ticketPrice">{t('organizer.tickets.price')}</Label>
                               <Input 
                                 id="ticketPrice"
                                 name="price"
@@ -856,7 +855,7 @@ const CreateEvent: React.FC = () => {
                               />
                             </div>
                             <div className="space-y-2">
-                              <Label htmlFor="ticketQuantity">Available Quantity</Label>
+                              <Label htmlFor="ticketQuantity">{t('organizer.tickets.quantity')}</Label>
                               <Input 
                                 id="ticketQuantity"
                                 name="quantity"
@@ -870,7 +869,7 @@ const CreateEvent: React.FC = () => {
                           
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                             <div className="space-y-2">
-                              <Label htmlFor="ticketSaleStartDate">Sale Start Date</Label>
+                              <Label htmlFor="ticketSaleStartDate">{t('organizer.tickets.saleStart')}</Label>
                               <Input 
                                 id="ticketSaleStartDate"
                                 name="saleStartDate"
@@ -880,7 +879,7 @@ const CreateEvent: React.FC = () => {
                               />
                             </div>
                             <div className="space-y-2">
-                              <Label htmlFor="ticketSaleEndDate">Sale End Date</Label>
+                              <Label htmlFor="ticketSaleEndDate">{t('organizer.tickets.saleEnd')}</Label>
                               <Input 
                                 id="ticketSaleEndDate"
                                 name="saleEndDate"
@@ -899,7 +898,7 @@ const CreateEvent: React.FC = () => {
                                   checked={newTicketType.isVIP}
                                   onCheckedChange={(checked) => handleTicketToggle('isVIP', checked)}
                                 />
-                                <Label htmlFor="isVIP" className="cursor-pointer">VIP Ticket</Label>
+                                <Label htmlFor="isVIP" className="cursor-pointer">{t('organizer.tickets.isVIP')}</Label>
                               </div>
                             </div>
                             
@@ -910,7 +909,7 @@ const CreateEvent: React.FC = () => {
                                   checked={newTicketType.isEarlyBird}
                                   onCheckedChange={(checked) => handleTicketToggle('isEarlyBird', checked)}
                                 />
-                                <Label htmlFor="isEarlyBird" className="cursor-pointer">Early Bird Discount</Label>
+                                <Label htmlFor="isEarlyBird" className="cursor-pointer">{t('organizer.tickets.isEarlyBird')}</Label>
                               </div>
                               
                               {newTicketType.isEarlyBird && (
@@ -925,7 +924,7 @@ const CreateEvent: React.FC = () => {
                                     onChange={handleTicketChange}
                                     className="w-20"
                                   />
-                                  <span>% discount</span>
+                                  <span>% {t('organizer.tickets.earlyBirdDiscount')}</span>
                                 </div>
                               )}
                             </div>
@@ -933,10 +932,10 @@ const CreateEvent: React.FC = () => {
                         </CardContent>
                         <CardFooter className="flex justify-between border-t pt-4">
                           <Button variant="outline" onClick={() => navigateToTab("basic")}>
-                            Back
+                            {t('organizer.cancel')}
                           </Button>
                           <Button onClick={handleAddTicketType} className="flex items-center gap-2">
-                            <Plus size={16} /> Add Ticket
+                            <Plus size={16} /> {t('organizer.tickets.add')}
                           </Button>
                         </CardFooter>
                       </Card>
@@ -945,9 +944,9 @@ const CreateEvent: React.FC = () => {
                       {eventData.ticketTypes.length > 0 && (
                         <Card className="mt-6">
                           <CardHeader>
-                            <CardTitle className="text-md">Revenue Preview</CardTitle>
+                            <CardTitle className="text-md">{t('organizer.tickets.revenuePreview')}</CardTitle>
                             <CardDescription>
-                              Estimated revenue based on ticket sales
+                              {t('organizer.tickets.revenueDescription')}
                             </CardDescription>
                           </CardHeader>
                           <CardContent>
@@ -956,14 +955,14 @@ const CreateEvent: React.FC = () => {
                                 <div key={ticket.id} className="flex justify-between items-center py-2 border-b last:border-0">
                                   <div>
                                     <p className="font-medium">{ticket.name}</p>
-                                    <p className="text-sm text-muted-foreground">{ticket.quantity} tickets × {formatCurrency(ticket.price)}</p>
+                                    <p className="text-sm text-muted-foreground">{ticket.quantity} {t('organizer.tickets.tickets')} × {formatCurrency(ticket.price)}</p>
                                   </div>
                                   <p className="font-semibold">{formatCurrency(ticket.quantity * ticket.price)}</p>
                                 </div>
                               ))}
                               
                               <div className="flex justify-between items-center pt-4 border-t">
-                                <p className="font-medium">Potential Total Revenue</p>
+                                <p className="font-medium">{t('organizer.tickets.potentialTotalRevenue')}</p>
                                 <p className="font-bold text-lg">
                                   {formatCurrency(
                                     eventData.ticketTypes.reduce((sum, ticket) => sum + (ticket.price * ticket.quantity), 0)
@@ -979,7 +978,7 @@ const CreateEvent: React.FC = () => {
                   
                   <div className="flex justify-end pt-4">
                     <Button onClick={() => navigateToTab("speakers")}>
-                      Continue to Speakers
+                      {t('organizer.basic.saveContinue')}
                     </Button>
                   </div>
                 </div>
@@ -990,7 +989,7 @@ const CreateEvent: React.FC = () => {
             <TabsContent value="speakers">
               <CardContent className="pt-6">
                 <div className="space-y-6">
-                  <h3 className="text-lg font-medium mb-4">Speakers</h3>
+                  <h3 className="text-lg font-medium mb-4">{t('organizer.speakers.title')}</h3>
                   
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                     {eventData.speakers.map(speaker => (
@@ -1021,7 +1020,7 @@ const CreateEvent: React.FC = () => {
                   {/* Add new speaker form */}
                   <Card className="mb-6">
                     <CardHeader>
-                      <CardTitle className="text-md">Add New Speaker</CardTitle>
+                      <CardTitle className="text-md">{t('organizer.speakers.addSpeaker')}</CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
@@ -1042,37 +1041,37 @@ const CreateEvent: React.FC = () => {
                             onClick={() => handleImageUpload('speaker', 'avatarUrl', 'some-url')}
                           >
                             <Upload className="h-4 w-4 mr-2" />
-                            Upload Photo
+                            {t('organizer.speakers.uploadPhoto')}
                           </Button>
                         </div>
                         <div className="space-y-2 md:col-span-2">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                             <div className="space-y-2">
-                              <Label htmlFor="speakerName">Name</Label>
+                              <Label htmlFor="speakerName">{t('organizer.speakers.name')}</Label>
                               <Input 
                                 id="speakerName" 
                                 value={newSpeaker.name} 
                                 onChange={(e) => setNewSpeaker(prev => ({ ...prev, name: e.target.value }))} 
-                                placeholder="Speaker name"
+                                placeholder={t('organizer.speakers.name.placeholder')}
                               />
                             </div>
                             <div className="space-y-2">
-                              <Label htmlFor="speakerTitle">Title</Label>
+                              <Label htmlFor="speakerTitle">{t('organizer.speakers.title')}</Label>
                               <Input 
                                 id="speakerTitle" 
                                 value={newSpeaker.title} 
                                 onChange={(e) => setNewSpeaker(prev => ({ ...prev, title: e.target.value }))}
-                                placeholder="Job title/Company"
+                                placeholder={t('organizer.speakers.title.placeholder')}
                               />
                             </div>
                           </div>
                           <div className="space-y-2">
-                            <Label htmlFor="speakerBio">Bio</Label>
+                            <Label htmlFor="speakerBio">{t('organizer.speakers.bio')}</Label>
                             <Textarea 
                               id="speakerBio" 
                               value={newSpeaker.bio} 
                               onChange={(e) => setNewSpeaker(prev => ({ ...prev, bio: e.target.value }))}
-                              placeholder="Speaker bio information"
+                              placeholder={t('organizer.speakers.bio.placeholder')}
                               rows={3}
                             />
                           </div>
@@ -1081,17 +1080,17 @@ const CreateEvent: React.FC = () => {
                     </CardContent>
                     <CardFooter className="flex justify-between border-t pt-4">
                       <Button variant="outline" onClick={() => navigateToTab("tickets")}>
-                        Back
+                        {t('organizer.cancel')}
                       </Button>
                       <Button onClick={handleAddSpeaker} className="flex items-center gap-2">
-                        <Plus size={16} /> Add Speaker
+                        <Plus size={16} /> {t('organizer.speakers.add')}
                       </Button>
                     </CardFooter>
                   </Card>
                   
                   <div className="flex justify-end pt-4">
                     <Button onClick={() => navigateToTab("schedule")}>
-                      Continue to Schedule
+                      {t('organizer.basic.saveContinue')}
                     </Button>
                   </div>
                 </div>
@@ -1104,22 +1103,22 @@ const CreateEvent: React.FC = () => {
                 {eventData.days.length === 0 ? (
                   <div className="text-center py-8">
                     <Calendar className="mx-auto h-12 w-12 text-muted-foreground" />
-                    <h3 className="mt-4 text-lg font-medium">Set Up Event Schedule</h3>
+                    <h3 className="mt-4 text-lg font-medium">{t('organizer.schedule.setUpTitle')}</h3>
                     <p className="mt-2 text-sm text-muted-foreground">
-                      Please select start and end dates in the Basic Info tab first
+                      {t('organizer.schedule.dateInfo')}
                     </p>
                     <Button 
                       className="mt-4" 
                       onClick={() => navigateToTab("basic")}
                     >
-                      Back to Basic Info
+                      {t('organizer.schedule.backToBasic')}
                     </Button>
                   </div>
                 ) : (
                   <div className="space-y-8">
                     {/* Event schedule by day */}
                     <div>
-                      <h3 className="text-lg font-medium mb-4">Event Schedule</h3>
+                      <h3 className="text-lg font-medium mb-4">{t('organizer.schedule.eventSchedule')}</h3>
                       
                       {/* Day tabs */}
                       <Tabs 
@@ -1164,7 +1163,7 @@ const CreateEvent: React.FC = () => {
                                           </div>
                                           {activity.location && (
                                             <p className="text-sm text-muted-foreground mt-1">
-                                              Location: {activity.location}
+                                              {t('organizer.schedule.location')}: {activity.location}
                                             </p>
                                           )}
                                           {activity.description && (
@@ -1172,7 +1171,7 @@ const CreateEvent: React.FC = () => {
                                           )}
                                           {activity.speakerIds && activity.speakerIds.length > 0 && (
                                             <div className="mt-2 space-y-1">
-                                              <p className="text-sm font-medium">Speakers:</p>
+                                              <p className="text-sm font-medium">{t('organizer.schedule.speakers')}:</p>
                                               <div className="flex flex-wrap gap-1">
                                                 {activity.speakerIds.map(speakerId => {
                                                   const speaker = eventData.speakers.find(s => s.id === speakerId);
@@ -1201,7 +1200,7 @@ const CreateEvent: React.FC = () => {
                               <div className="text-center py-6 bg-slate-50 rounded-lg border border-dashed">
                                 <List className="mx-auto h-8 w-8 text-muted-foreground" />
                                 <p className="mt-2 text-sm text-muted-foreground">
-                                  No activities for this day yet
+                                  {t('organizer.schedule.noActivities')}
                                 </p>
                               </div>
                             )}
@@ -1209,25 +1208,25 @@ const CreateEvent: React.FC = () => {
                             {/* Form to add new activity */}
                             <Card className="mt-6">
                               <CardHeader>
-                                <CardTitle className="text-md">Add New Activity</CardTitle>
+                                <CardTitle className="text-md">{t('organizer.schedule.addActivity')}</CardTitle>
                                 <CardDescription>
-                                  Add workshops, presentations, or networking sessions
+                                  {t('organizer.schedule.addActivityInfo')}
                                 </CardDescription>
                               </CardHeader>
                               <CardContent>
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                   <div className="space-y-2">
-                                    <Label htmlFor="activityTitle">Activity Name</Label>
+                                    <Label htmlFor="activityTitle">{t('organizer.schedule.activityName')}</Label>
                                     <Input 
                                       id="activityTitle" 
                                       name="title"
                                       value={newActivity.title} 
                                       onChange={handleActivityChange} 
-                                      placeholder="Activity name"
+                                      placeholder={t('organizer.schedule.activityName.placeholder')}
                                     />
                                   </div>
                                   <div className="space-y-2">
-                                    <Label htmlFor="activityType">Type</Label>
+                                    <Label htmlFor="activityType">{t('organizer.schedule.type')}</Label>
                                     <select 
                                       id="activityType" 
                                       name="type"
@@ -1235,18 +1234,18 @@ const CreateEvent: React.FC = () => {
                                       value={newActivity.type}
                                       onChange={handleActivityChange}
                                     >
-                                      <option value="workshop">Workshop</option>
-                                      <option value="meeting">Meeting</option>
-                                      <option value="exhibit">Exhibition</option>
-                                      <option value="networking">Networking</option>
-                                      <option value="other">Other</option>
+                                      <option value="workshop">{t('organizer.schedule.workshop')}</option>
+                                      <option value="meeting">{t('organizer.schedule.meeting')}</option>
+                                      <option value="exhibit">{t('organizer.schedule.exhibit')}</option>
+                                      <option value="networking">{t('organizer.schedule.networking')}</option>
+                                      <option value="other">{t('organizer.schedule.other')}</option>
                                     </select>
                                   </div>
                                 </div>
                                 
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                                   <div className="space-y-2">
-                                    <Label htmlFor="activityStartTime">Start Time</Label>
+                                    <Label htmlFor="activityStartTime">{t('organizer.schedule.startTime')}</Label>
                                     <Input 
                                       id="activityStartTime" 
                                       name="startTime"
@@ -1256,7 +1255,7 @@ const CreateEvent: React.FC = () => {
                                     />
                                   </div>
                                   <div className="space-y-2">
-                                    <Label htmlFor="activityEndTime">End Time</Label>
+                                    <Label htmlFor="activityEndTime">{t('organizer.schedule.endTime')}</Label>
                                     <Input 
                                       id="activityEndTime" 
                                       name="endTime"
@@ -1268,31 +1267,31 @@ const CreateEvent: React.FC = () => {
                                 </div>
                                 
                                 <div className="space-y-2 mb-4">
-                                  <Label htmlFor="activityLocation">Location</Label>
+                                  <Label htmlFor="activityLocation">{t('organizer.schedule.location')}</Label>
                                   <Input 
                                     id="activityLocation" 
                                     name="location"
                                     value={newActivity.location} 
                                     onChange={handleActivityChange}
-                                    placeholder="Activity location"
+                                    placeholder={t('organizer.schedule.location.placeholder')}
                                   />
                                 </div>
                                 
                                 <div className="space-y-2 mb-4">
-                                  <Label htmlFor="activityDescription">Description</Label>
+                                  <Label htmlFor="activityDescription">{t('organizer.schedule.description')}</Label>
                                   <Textarea 
                                     id="activityDescription" 
                                     name="description"
                                     value={newActivity.description} 
                                     onChange={handleActivityChange}
-                                    placeholder="Activity description"
+                                    placeholder={t('organizer.schedule.description.placeholder')}
                                     rows={3}
                                   />
                                 </div>
                                 
                                 {eventData.speakers.length > 0 && (
                                   <div className="space-y-2">
-                                    <Label>Speakers</Label>
+                                    <Label>{t('organizer.schedule.speakers')}</Label>
                                     <div className="flex flex-wrap gap-2">
                                       {eventData.speakers.map(speaker => (
                                         <Badge 
@@ -1320,10 +1319,10 @@ const CreateEvent: React.FC = () => {
                               </CardContent>
                               <CardFooter className="flex justify-between border-t pt-4">
                                 <Button variant="outline" onClick={() => navigateToTab("speakers")}>
-                                  Back to Speakers
+                                  {t('organizer.speakers.backToSpeakers')}
                                 </Button>
                                 <Button onClick={handleAddActivity} className="flex items-center gap-2">
-                                  <Plus size={16} /> Add Activity
+                                  <Plus size={16} /> {t('organizer.schedule.addActivity')}
                                 </Button>
                               </CardFooter>
                             </Card>
@@ -1335,7 +1334,7 @@ const CreateEvent: React.FC = () => {
                     {/* Overall agenda view */}
                     <Separator className="my-8" />
                     <div>
-                      <h3 className="text-lg font-medium mb-4">Overall Agenda</h3>
+                      <h3 className="text-lg font-medium mb-4">{t('organizer.schedule.overallAgenda')}</h3>
                       
                       {eventData.days.map(day => (
                         <div key={day.id} className="mb-8">
@@ -1392,7 +1391,7 @@ const CreateEvent: React.FC = () => {
                             </div>
                           ) : (
                             <p className="text-sm text-muted-foreground ml-12">
-                              No activities scheduled for this day
+                              {t('organizer.schedule.noActivities')}
                             </p>
                           )}
                         </div>
@@ -1401,7 +1400,7 @@ const CreateEvent: React.FC = () => {
 
                     <div className="flex justify-end pt-4">
                       <Button onClick={() => navigateToTab("sponsors")}>
-                        Continue to Sponsors
+                        {t('organizer.basic.saveContinue')}
                       </Button>
                     </div>
                   </div>
@@ -1412,7 +1411,7 @@ const CreateEvent: React.FC = () => {
             <TabsContent value="sponsors">
               <CardContent className="py-6">
                 <div className="space-y-8">
-                  <h3 className="text-lg font-medium mb-4">Sponsors</h3>
+                  <h3 className="text-lg font-medium mb-4">{t('organizer.sponsors.title')}</h3>
                   
                   {/* Display sponsors by level */}
                   <div className="space-y-6">
@@ -1420,7 +1419,7 @@ const CreateEvent: React.FC = () => {
                       const levelSponsors = eventData.sponsors.filter(sponsor => sponsor.level === level);
                       return levelSponsors.length > 0 ? (
                         <div key={level} className="space-y-4">
-                          <h4 className="font-medium capitalize">{level} Sponsors</h4>
+                          <h4 className="font-medium capitalize">{level} {t('organizer.sponsors.sponsors')}</h4>
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                             {levelSponsors.map(sponsor => (
                               <Card key={sponsor.id} className="relative">
@@ -1468,7 +1467,7 @@ const CreateEvent: React.FC = () => {
                     <div className="text-center py-6 bg-slate-50 rounded-lg border border-dashed">
                       <Award className="mx-auto h-8 w-8 text-muted-foreground" />
                       <p className="mt-2 text-sm text-muted-foreground">
-                        No sponsors added yet
+                        {t('organizer.sponsors.noSponsors')}
                       </p>
                     </div>
                   )}
@@ -1476,7 +1475,7 @@ const CreateEvent: React.FC = () => {
                   {/* Add new sponsor form */}
                   <Card className="mb-6">
                     <CardHeader>
-                      <CardTitle className="text-md">Add New Sponsor</CardTitle>
+                      <CardTitle className="text-md">{t('organizer.sponsors.addSponsor')}</CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
@@ -1499,22 +1498,22 @@ const CreateEvent: React.FC = () => {
                             onClick={() => handleImageUpload('sponsor', 'logoUrl', 'some-url')}
                           >
                             <Upload className="h-4 w-4 mr-2" />
-                            Upload Logo
+                            {t('organizer.sponsors.uploadLogo')}
                           </Button>
                         </div>
                         <div className="space-y-2 md:col-span-2">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                             <div className="space-y-2">
-                              <Label htmlFor="sponsorName">Organization Name</Label>
+                              <Label htmlFor="sponsorName">{t('organizer.sponsors.organizationName')}</Label>
                               <Input 
                                 id="sponsorName" 
                                 value={newSponsor.name} 
                                 onChange={(e) => setNewSponsor(prev => ({ ...prev, name: e.target.value }))} 
-                                placeholder="Sponsor name"
+                                placeholder={t('organizer.sponsors.organizationName.placeholder')}
                               />
                             </div>
                             <div className="space-y-2">
-                              <Label htmlFor="sponsorLevel">Sponsorship Level</Label>
+                              <Label htmlFor="sponsorLevel">{t('organizer.sponsors.sponsorshipLevel')}</Label>
                               <select 
                                 id="sponsorLevel" 
                                 className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-base ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 md:text-sm"
@@ -1529,7 +1528,7 @@ const CreateEvent: React.FC = () => {
                             </div>
                           </div>
                           <div className="space-y-2 mb-4">
-                            <Label htmlFor="sponsorWebsite">Website</Label>
+                            <Label htmlFor="sponsorWebsite">{t('organizer.sponsors.website')}</Label>
                             <Input 
                               id="sponsorWebsite" 
                               value={newSponsor.website} 
@@ -1538,12 +1537,12 @@ const CreateEvent: React.FC = () => {
                             />
                           </div>
                           <div className="space-y-2">
-                            <Label htmlFor="sponsorDescription">Description</Label>
+                            <Label htmlFor="sponsorDescription">{t('organizer.sponsors.description')}</Label>
                             <Textarea 
                               id="sponsorDescription" 
                               value={newSponsor.description} 
                               onChange={(e) => setNewSponsor(prev => ({ ...prev, description: e.target.value }))}
-                              placeholder="About the sponsor"
+                              placeholder={t('organizer.sponsors.description.placeholder')}
                               rows={3}
                             />
                           </div>
@@ -1552,7 +1551,7 @@ const CreateEvent: React.FC = () => {
                     </CardContent>
                     <CardFooter className="flex justify-end border-t pt-4">
                       <Button onClick={handleAddSponsor} className="flex items-center gap-2">
-                        <Plus size={16} /> Add Sponsor
+                        <Plus size={16} /> {t('organizer.sponsors.add')}
                       </Button>
                     </CardFooter>
                   </Card>
@@ -1563,7 +1562,7 @@ const CreateEvent: React.FC = () => {
             <TabsContent value="booths">
               <CardContent className="py-6">
                 <div className="space-y-8">
-                  <h3 className="text-lg font-medium mb-4">Exhibition Booths</h3>
+                  <h3 className="text-lg font-medium mb-4">{t('organizer.booths.title')}</h3>
                   
                   {/* Display exhibition booths */}
                   {eventData.booths.length > 0 ? (
@@ -1602,7 +1601,7 @@ const CreateEvent: React.FC = () => {
                     <div className="text-center py-6 bg-slate-50 rounded-lg border border-dashed">
                       <Building className="mx-auto h-8 w-8 text-muted-foreground" />
                       <p className="mt-2 text-sm text-muted-foreground">
-                        No exhibition booths added yet
+                        {t('organizer.booths.noBooths')}
                       </p>
                     </div>
                   )}
@@ -1610,7 +1609,7 @@ const CreateEvent: React.FC = () => {
                   {/* Add new booth form */}
                   <Card className="mb-6">
                     <CardHeader>
-                      <CardTitle className="text-md">Add Exhibition Booth</CardTitle>
+                      <CardTitle className="text-md">{t('organizer.booths.addBooth')}</CardTitle>
                     </CardHeader>
                     <CardContent>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
@@ -1633,46 +1632,46 @@ const CreateEvent: React.FC = () => {
                             onClick={() => handleImageUpload('booth', 'coverImageUrl', 'some-url')}
                           >
                             <Upload className="h-4 w-4 mr-2" />
-                            Upload Cover
+                            {t('organizer.booths.uploadCover')}
                           </Button>
                         </div>
                         <div className="space-y-2 md:col-span-2">
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                             <div className="space-y-2">
-                              <Label htmlFor="boothName">Booth Name</Label>
+                              <Label htmlFor="boothName">{t('organizer.booths.boothName')}</Label>
                               <Input 
                                 id="boothName" 
                                 value={newBooth.name} 
                                 onChange={(e) => setNewBooth(prev => ({ ...prev, name: e.target.value }))} 
-                                placeholder="Booth name"
+                                placeholder={t('organizer.booths.boothName.placeholder')}
                               />
                             </div>
                             <div className="space-y-2">
-                              <Label htmlFor="boothCompany">Company</Label>
+                              <Label htmlFor="boothCompany">{t('organizer.booths.company')}</Label>
                               <Input 
                                 id="boothCompany" 
                                 value={newBooth.company} 
                                 onChange={(e) => setNewBooth(prev => ({ ...prev, company: e.target.value }))} 
-                                placeholder="Company name"
+                                placeholder={t('organizer.booths.company.placeholder')}
                               />
                             </div>
                           </div>
                           <div className="space-y-2 mb-4">
-                            <Label htmlFor="boothLocation">Location</Label>
+                            <Label htmlFor="boothLocation">{t('organizer.booths.location')}</Label>
                             <Input 
                               id="boothLocation" 
                               value={newBooth.location} 
                               onChange={(e) => setNewBooth(prev => ({ ...prev, location: e.target.value }))} 
-                              placeholder="Booth location (e.g., Hall A, Booth #123)"
+                              placeholder={t('organizer.booths.location.placeholder')}
                             />
                           </div>
                           <div className="space-y-2">
-                            <Label htmlFor="boothDescription">Description</Label>
+                            <Label htmlFor="boothDescription">{t('organizer.booths.description')}</Label>
                             <Textarea 
                               id="boothDescription" 
                               value={newBooth.description} 
                               onChange={(e) => setNewBooth(prev => ({ ...prev, description: e.target.value }))}
-                              placeholder="Booth description"
+                              placeholder={t('organizer.booths.description.placeholder')}
                               rows={3}
                             />
                           </div>
@@ -1681,7 +1680,7 @@ const CreateEvent: React.FC = () => {
                     </CardContent>
                     <CardFooter className="flex justify-end border-t pt-4">
                       <Button onClick={handleAddBooth} className="flex items-center gap-2">
-                        <Plus size={16} /> Add Booth
+                        <Plus size={16} /> {t('organizer.booths.add')}
                       </Button>
                     </CardFooter>
                   </Card>
@@ -1693,16 +1692,16 @@ const CreateEvent: React.FC = () => {
               <CardContent className="py-6">
                 <div className="text-center py-8">
                   <Image className="mx-auto h-12 w-12 text-muted-foreground" />
-                  <h3 className="mt-4 text-lg font-medium">Event Media</h3>
+                  <h3 className="mt-4 text-lg font-medium">{t('organizer.media.title')}</h3>
                   <p className="mt-2 text-sm text-muted-foreground">
-                    Upload banners, logos, and promotional materials
+                    {t('organizer.media.uploadInstructions')}
                   </p>
-                  <Button className="mt-4">Upload Images</Button>
+                  <Button className="mt-4">{t('organizer.media.uploadImages')}</Button>
                 </div>
 
                 <div className="flex justify-start pt-4">
                   <Button variant="outline" onClick={() => navigateToTab("booths")}>
-                    Back to Exhibition
+                    {t('organizer.booths.backToExhibition')}
                   </Button>
                 </div>
               </CardContent>
@@ -1710,28 +1709,28 @@ const CreateEvent: React.FC = () => {
           </Tabs>
           <CardFooter className="border-t p-6 flex justify-between">
             <Button variant="outline" onClick={() => navigate('/organizer/dashboard')}>
-              Cancel
+              {t('organizer.cancel')}
             </Button>
             <Button onClick={handleSubmit}>
-              Create Event
+              {t('organizer.createEvent.createEvent')}
             </Button>
           </CardFooter>
         </Card>
         
         <Card>
           <CardHeader>
-            <CardTitle>Tips for a Successful Event</CardTitle>
+            <CardTitle>{t('organizer.createEvent.tipsTitle')}</CardTitle>
             <CardDescription>
-              Follow these guidelines to maximize attendance and engagement
+              {t('organizer.createEvent.tipsDescription')}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <ul className="list-disc pl-5 space-y-2">
-              <li>Use a clear title and provide detailed information</li>
-              <li>Add high-quality images to represent your event</li>
-              <li>Provide detailed information about speakers and workshops</li>
-              <li>Create different ticket types to attract various attendees</li>
-              <li>Promote the event on social media and related platforms</li>
+              <li>{t('organizer.createEvent.tip1')}</li>
+              <li>{t('organizer.createEvent.tip2')}</li>
+              <li>{t('organizer.createEvent.tip3')}</li>
+              <li>{t('organizer.createEvent.tip4')}</li>
+              <li>{t('organizer.createEvent.tip5')}</li>
             </ul>
           </CardContent>
         </Card>

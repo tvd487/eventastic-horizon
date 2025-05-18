@@ -1,6 +1,6 @@
-
 import React from 'react';
 import { Calendar, Users, Search } from 'lucide-react';
+import { useLanguage } from '@/contexts/useLanguage';
 
 interface FeatureProps {
   icon: React.ReactNode;
@@ -21,31 +21,33 @@ const Feature: React.FC<FeatureProps> = ({ icon, title, description }) => {
 };
 
 const Features: React.FC = () => {
+  const { t } = useLanguage();
+
   const features = [
     {
-      icon: <Calendar className="h-6 w-6 text-primary" />,
-      title: "Easy Event Management",
-      description: "Create and manage events with a simple, intuitive interface. Set up multi-day events with complex agendas in minutes."
+      icon: <Calendar className="h-6 w-6 text-primary" />, 
+      title: t('features.feature1.title'),
+      description: t('features.feature1.desc'),
     },
     {
-      icon: <Users className="h-6 w-6 text-primary" />,
-      title: "Attendee Engagement",
-      description: "Keep your attendees informed and engaged with QR check-ins, downloadable materials, and feedback collection."
+      icon: <Users className="h-6 w-6 text-primary" />, 
+      title: t('features.feature2.title'),
+      description: t('features.feature2.desc'),
     },
     {
-      icon: <Search className="h-6 w-6 text-primary" />,
-      title: "Powerful Analytics",
-      description: "Gain valuable insights with comprehensive analytics. Track participation, revenue, and satisfaction metrics."
-    }
+      icon: <Search className="h-6 w-6 text-primary" />, 
+      title: t('features.feature3.title'),
+      description: t('features.feature3.desc'),
+    },
   ];
 
   return (
     <section className="py-16 bg-gray-50">
       <div className="container mx-auto px-4">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-4">Why Choose Eventomorrow</h2>
+          <h2 className="text-3xl font-bold mb-4">{t('features.title')}</h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Our platform provides everything you need to create, manage, and attend events successfully.
+            {t('features.subtitle')}
           </p>
         </div>
         
