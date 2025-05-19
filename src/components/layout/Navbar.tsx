@@ -46,7 +46,7 @@ const Navbar: React.FC = () => {
       <div className="container mx-auto px-4 flex items-center justify-between">
         <Link to="/" className="flex items-center space-x-2">
           <Calendar className="h-8 w-8 text-primary" />
-          <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary to-primary-dark">
+          <span className="text-2xl font-bold text-[#003366]">
             Eventomorrow
           </span>
         </Link>
