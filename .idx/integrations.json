@@ -1,0 +1,7 @@
+{
+  "firebase_hosting": {
+    "deploymentHostingUrl": "https://eventide-2mjty.web.app"
+  },
+  "cloud_run_deploy": {},
+  "gemini_api": {}
+}
